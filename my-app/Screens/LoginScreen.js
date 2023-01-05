@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   StyleSheet,
   View,
@@ -5,31 +7,57 @@ import {
   Text,
   TextInput,
   ImageBackground,
+  Platform,
+  KeyboardAvoidingView,
+  Keyboard,
 } from "react-native";
 
 const images = require("../Images/background.png");
 
 export default function LoginScreen() {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+  console.log("isShowKeyboard", isShowKeyboard);
   return (
     <ImageBackground style={styles.image} source={images}>
-      <View style={styles.container}>
-        <Text style={styles.text}>Увійти</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Адреса електронної пошти"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Пароль"
-          secureTextEntry={"true"}
-        />
-        <View style={styles.button}>
-          <Button style={styles.button} color={"#fff"} title="Увійти" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View
+          style={{ ...styles.container, top: isShowKeyboard ? -240 : -120 }}
+        >
+          <Text style={styles.text}>Увійти</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Адреса електронної пошти"
+            onFocus={() => {
+              setIsShowKeyboard(true);
+            }}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Пароль"
+            secureTextEntry={"true"}
+            onFocus={() => {
+              setIsShowKeyboard(true);
+            }}
+          />
+          <View style={styles.button}>
+            <Button
+              onPress={keyboardHide}
+              style={styles.button}
+              color={"#fff"}
+              title="Увійти"
+            />
+          </View>
+          <View style={{ padding: 16 }}>
+            <Button color={"#1B4371"} title="Немає акаунта? Зареєструватись" />
+          </View>
         </View>
-        <View style={{ padding: 16 }}>
-          <Button color={"#1B4371"} title="Немає акаунта? Зареєструватись" />
-        </View>
-      </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
@@ -37,7 +65,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 0,
+    left: -205,
     height: 489,
     width: 410,
     backgroundColor: "#fff",
