@@ -18,12 +18,16 @@ export default function LoginScreen() {
           style={styles.input}
           placeholder="Адреса електронної пошти"
         />
-        <TextInput style={styles.input} placeholder="Пароль" />
+        <TextInput
+          style={styles.input}
+          placeholder="Пароль"
+          secureTextEntry={"true"}
+        />
         <View style={styles.button}>
           <Button style={styles.button} color={"#fff"} title="Увійти" />
         </View>
         <View style={{ padding: 16 }}>
-          <Button color={"#000"} title="Немає акаунта? Зареєструватись" />
+          <Button color={"#1B4371"} title="Немає акаунта? Зареєструватись" />
         </View>
       </View>
     </ImageBackground>

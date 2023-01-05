@@ -5,6 +5,7 @@ import {
   ImageBackground,
   TextInput,
   Button,
+  TouchableOpacity,
 } from "react-native";
 
 const images = require("../Images/background.png");
@@ -15,9 +16,9 @@ export default function RegistrationScreen() {
       <View style={styles.container}>
         <View style={styles.avatarContainer}>
           <View style={styles.avatar}></View>
-          <View style={styles.buttonContainer}>
-            <Button title="+" color={"#FF6C00"} />
-          </View>
+          <TouchableOpacity style={styles.buttonContainer}>
+            <Text style={styles.buttonText}>+</Text>
+          </TouchableOpacity>
         </View>
         <Text style={styles.text}>Реєстрація</Text>
         <TextInput style={styles.input} placeholder="Логін" />
@@ -25,7 +26,11 @@ export default function RegistrationScreen() {
           style={styles.input}
           placeholder="Адреса електронної пошти"
         />
-        <TextInput style={styles.input} placeholder="Пароль" />
+        <TextInput
+          style={styles.input}
+          placeholder="Пароль"
+          secureTextEntry={true}
+        />
         <View style={styles.button}>
           <Button
             style={styles.button}
@@ -34,7 +39,7 @@ export default function RegistrationScreen() {
           />
         </View>
         <View style={{ padding: 16 }}>
-          <Button color={"#000"} title="У вас вже є акаунт? Увійти" />
+          <Button color={"#1B4371"} title="У вас вже є акаунт? Увійти" />
         </View>
       </View>
     </ImageBackground>
@@ -96,14 +101,21 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    // width: 25,
-    // height: 25,
-    top: -85,
-    left: 35,
-    borderWidth: 1,
+    width: 25,
+    height: 25,
+    top: -70,
+    left: 47,
+    borderWidth: 2,
     borderRadius: 50,
     backgroundColor: "#fff",
     borderColor: "#FF6C00",
-    paddingHorizontal: 6,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    position: "absolute",
+    top: -10,
+    fontSize: 30,
+    color: "#FF6C00",
   },
 });
