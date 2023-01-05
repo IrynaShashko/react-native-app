@@ -16,13 +16,23 @@ import {
 
 const images = require("../Images/background.png");
 
+const initialSate = {
+  login: "",
+  email: "",
+  password: "",
+};
+
 export default function RegistrationScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [state, setState] = useState(initialSate);
+
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
+    console.log(state);
+    setState(initialSate);
   };
-  console.log("isShowKeyboard", isShowKeyboard);
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <ImageBackground style={styles.image} source={images}>
@@ -42,25 +52,37 @@ export default function RegistrationScreen() {
               <Text style={styles.text}>Реєстрація</Text>
               <TextInput
                 style={styles.input}
+                value={state.login}
                 placeholder="Логін"
                 onFocus={() => {
                   setIsShowKeyboard(true);
                 }}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, login: value }))
+                }
               />
               <TextInput
                 style={styles.input}
+                value={state.email}
                 placeholder="Адреса електронної пошти"
                 onFocus={() => {
                   setIsShowKeyboard(true);
                 }}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, email: value }))
+                }
               />
               <TextInput
                 style={styles.input}
+                value={state.password}
                 placeholder="Пароль"
                 secureTextEntry={true}
                 onFocus={() => {
                   setIsShowKeyboard(true);
                 }}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, password: value }))
+                }
               />
               <View style={styles.button}>
                 <Button

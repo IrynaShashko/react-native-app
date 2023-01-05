@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+// import * as Font from "expo-font";
 import {
   StyleSheet,
   View,
@@ -10,55 +10,80 @@ import {
   Platform,
   KeyboardAvoidingView,
   Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 
 const images = require("../Images/background.png");
 
+const initialSate = {
+  email: "",
+  password: "",
+};
+
 export default function LoginScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [state, setState] = useState(initialSate);
+
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
+    console.log(state);
+    setState(initialSate);
   };
-  console.log("isShowKeyboard", isShowKeyboard);
+
   return (
-    <ImageBackground style={styles.image} source={images}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View
-          style={{ ...styles.container, top: isShowKeyboard ? -240 : -120 }}
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <ImageBackground style={styles.image} source={images}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <Text style={styles.text}>Увійти</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Адреса електронної пошти"
-            onFocus={() => {
-              setIsShowKeyboard(true);
-            }}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Пароль"
-            secureTextEntry={"true"}
-            onFocus={() => {
-              setIsShowKeyboard(true);
-            }}
-          />
-          <View style={styles.button}>
-            <Button
-              onPress={keyboardHide}
-              style={styles.button}
-              color={"#fff"}
-              title="Увійти"
-            />
-          </View>
-          <View style={{ padding: 16 }}>
-            <Button color={"#1B4371"} title="Немає акаунта? Зареєструватись" />
-          </View>
-        </View>
-      </KeyboardAvoidingView>
-    </ImageBackground>
+          <TouchableWithoutFeedback onPress={keyboardHide}>
+            <View
+              style={{ ...styles.container, top: isShowKeyboard ? -240 : -120 }}
+            >
+              <Text style={styles.text}>Увійти</Text>
+              <TextInput
+                style={styles.input}
+                value={state.email}
+                placeholder="Адреса електронної пошти"
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, email: value }))
+                }
+              />
+              <TextInput
+                style={styles.input}
+                value={state.password}
+                placeholder="Пароль"
+                secureTextEntry={"true"}
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, password: value }))
+                }
+              />
+              <View style={styles.button}>
+                <Button
+                  onPress={keyboardHide}
+                  style={styles.button}
+                  color={"#fff"}
+                  title="Увійти"
+                />
+              </View>
+              <View style={{ padding: 16 }}>
+                <Button
+                  color={"#1B4371"}
+                  title="Немає акаунта? Зареєструватись"
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      </ImageBackground>
+    </TouchableWithoutFeedback>
   );
 }
 
