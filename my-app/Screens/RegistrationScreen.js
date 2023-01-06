@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   StyleSheet,
@@ -12,9 +12,10 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
+  Dimensions,
 } from "react-native";
 
-const images = require("../Images/background.png");
+const images = require("../assets/Images/background.png");
 
 const initialSate = {
   login: "",
@@ -25,6 +26,18 @@ const initialSate = {
 export default function RegistrationScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
+  const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
+
+  useEffect(() => {
+    const onChange = () => {
+      const width = Dimensions.get("window").width;
+      setDimensions(width);
+    };
+    Dimensions.addEventListener("change", onChange);
+    // return () => {
+    //   Dimensions.removeEventListener("change", onChange);
+    // };
+  });
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -41,7 +54,12 @@ export default function RegistrationScreen() {
         >
           <TouchableWithoutFeedback onPress={keyboardHide}>
             <View
-              style={{ ...styles.container, top: isShowKeyboard ? -300 : -185 }}
+              style={{
+                ...styles.container,
+                top: isShowKeyboard ? -300 : -185,
+                width: dimensions,
+                left: dimensions < 500 ? -205 : -368,
+              }}
             >
               <View style={styles.avatarContainer}>
                 <View style={styles.avatar}></View>

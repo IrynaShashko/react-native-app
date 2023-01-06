@@ -1,5 +1,4 @@
-import { useState } from "react";
-// import * as Font from "expo-font";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -11,9 +10,10 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
+  Dimensions,
 } from "react-native";
 
-const images = require("../Images/background.png");
+const images = require("../assets/Images/background.png");
 
 const initialSate = {
   email: "",
@@ -23,6 +23,18 @@ const initialSate = {
 export default function LoginScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
+  const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
+
+  useEffect(() => {
+    const onChange = () => {
+      const width = Dimensions.get("window").width;
+      setDimensions(width);
+    };
+    Dimensions.addEventListener("change", onChange);
+    // return () => {
+    //   Dimensions.removeEventListener("change", onChange);
+    // };
+  });
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -39,7 +51,12 @@ export default function LoginScreen() {
         >
           <TouchableWithoutFeedback onPress={keyboardHide}>
             <View
-              style={{ ...styles.container, top: isShowKeyboard ? -240 : -120 }}
+              style={{
+                ...styles.container,
+                top: isShowKeyboard ? -240 : -120,
+                width: dimensions,
+                left: dimensions < 500 ? -205 : -368,
+              }}
             >
               <Text style={styles.text}>Увійти</Text>
               <TextInput
@@ -90,9 +107,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    left: -205,
     height: 489,
-    width: 410,
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
