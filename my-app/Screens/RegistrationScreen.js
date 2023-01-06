@@ -34,10 +34,10 @@ export default function RegistrationScreen() {
       setDimensions(width);
     };
     Dimensions.addEventListener("change", onChange);
-    // return () => {
-    //   Dimensions.removeEventListener("change", onChange);
-    // };
-  });
+    return () => {
+      Dimensions.removeEventListener("change", onChange);
+    };
+  }, []);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -69,7 +69,7 @@ export default function RegistrationScreen() {
               </View>
               <Text style={styles.text}>Реєстрація</Text>
               <TextInput
-                style={styles.input}
+                style={{ ...styles.input, width: dimensions < 500 ? 343 : 543 }}
                 value={state.login}
                 placeholder="Логін"
                 onFocus={() => {
@@ -80,7 +80,7 @@ export default function RegistrationScreen() {
                 }
               />
               <TextInput
-                style={styles.input}
+                style={{ ...styles.input, width: dimensions < 500 ? 343 : 543 }}
                 value={state.email}
                 placeholder="Адреса електронної пошти"
                 onFocus={() => {
@@ -91,7 +91,7 @@ export default function RegistrationScreen() {
                 }
               />
               <TextInput
-                style={styles.input}
+                style={{ ...styles.input, width: dimensions < 500 ? 343 : 543 }}
                 value={state.password}
                 placeholder="Пароль"
                 secureTextEntry={true}
@@ -102,7 +102,12 @@ export default function RegistrationScreen() {
                   setState((prevState) => ({ ...prevState, password: value }))
                 }
               />
-              <View style={styles.button}>
+              <View
+                style={{
+                  ...styles.button,
+                  width: dimensions < 500 ? 343 : 543,
+                }}
+              >
                 <Button
                   onPress={keyboardHide}
                   style={styles.button}
@@ -145,7 +150,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
-    width: 343,
     height: 50,
     borderWidth: 1,
     borderRadius: 8,
@@ -156,7 +160,6 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#FF6C00",
-    width: 343,
     borderRadius: 50,
     paddingVertical: 8,
   },
