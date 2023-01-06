@@ -24,6 +24,7 @@ export default function LoginScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
+  console.log("state", state);
 
   useEffect(() => {
     const onChange = () => {
@@ -31,9 +32,9 @@ export default function LoginScreen() {
       setDimensions(width);
     };
     Dimensions.addEventListener("change", onChange);
-    return () => {
-      Dimensions.removeEventListener("change", onChange);
-    };
+    // return () => {
+    //   Dimensions.removeEventListener("change", onChange);
+    // };
   }, []);
 
   const keyboardHide = () => {
