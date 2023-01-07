@@ -1,3 +1,4 @@
+import { StyleSheet, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
@@ -42,17 +43,28 @@ export const useRoute = (isAuth) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => {
-            return <AntDesign name="appstore-o" size={size} color={color} />;
+            return (
+              //   <View style={styles.iconContainer}>
+              //     <AntDesign name="appstore-o" size={size} color="#fff" />
+              //   </View>
+              <AntDesign name="appstore-o" size={size} color={color} />
+            );
           },
         }}
         name="Posts"
         component={PostsScreen}
       />
+
       <MainTab.Screen
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => {
-            return <AntDesign name="pluscircleo" size={size} color={color} />;
+            return (
+              //   <View style={styles.iconContainer}>
+              //     <AntDesign name="plus" size={size} color="#fff" />
+              //   </View>
+              <AntDesign name="plus" size={size} color={color} />
+            );
           },
         }}
         name="Create"
@@ -62,7 +74,12 @@ export const useRoute = (isAuth) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => {
-            return <Feather name="user" size={size} color={color} />;
+            return (
+              <View style={styles.iconContainer}>
+                <Feather name="user" size={size} color="#fff" />
+              </View>
+              //   <Feather name="user" size={size} color={color} />
+            );
           },
         }}
         name="Profile"
@@ -71,3 +88,14 @@ export const useRoute = (isAuth) => {
     </MainTab.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    width: 70,
+    height: 40,
+    backgroundColor: "#FF6C00",
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
