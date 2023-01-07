@@ -7,6 +7,7 @@ import {
   TextInput,
   ImageBackground,
   Platform,
+  TouchableOpacity,
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
@@ -20,11 +21,10 @@ const initialSate = {
   password: "",
 };
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
-  console.log("state", state);
 
   useEffect(() => {
     const onChange = () => {
@@ -37,10 +37,16 @@ export default function LoginScreen() {
     // };
   }, []);
 
-  const keyboardHide = () => {
+  const submitForm = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     console.log(state);
+    setState(initialSate);
+  };
+
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
     setState(initialSate);
   };
 
@@ -90,18 +96,33 @@ export default function LoginScreen() {
                 }}
               >
                 <Button
-                  onPress={keyboardHide}
+                  onPress={submitForm}
                   style={styles.button}
                   color={"#fff"}
                   title="Увійти"
                 />
               </View>
-              <View style={{ padding: 16 }}>
-                <Button
-                  color={"#1B4371"}
-                  title="Немає акаунта? Зареєструватись"
-                />
-              </View>
+              <TouchableOpacity
+                style={{ padding: 16, justifyContent: "space-evenly" }}
+                onPress={() => navigation.navigate("Register")}
+              >
+                <Text
+                  style={{
+                    color: "#1B4371",
+                    fontSize: 16,
+                  }}
+                >
+                  Немає акаунта?{"  "}
+                  <Text
+                    style={{
+                      color: "#1B4371",
+                      fontSize: 20,
+                    }}
+                  >
+                    Зареєструватись
+                  </Text>
+                </Text>
+              </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>

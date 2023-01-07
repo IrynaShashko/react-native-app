@@ -23,7 +23,7 @@ const initialSate = {
   password: "",
 };
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
@@ -39,10 +39,16 @@ export default function RegistrationScreen() {
     // };
   }, []);
 
-  const keyboardHide = () => {
+  const submitForm = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     console.log(state);
+    setState(initialSate);
+  };
+
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
     setState(initialSate);
   };
 
@@ -109,15 +115,33 @@ export default function RegistrationScreen() {
                 }}
               >
                 <Button
-                  onPress={keyboardHide}
+                  onPress={submitForm}
                   style={styles.button}
                   color={"#fff"}
                   title="Зареєструватись"
                 />
               </View>
-              <View style={{ padding: 16 }}>
-                <Button color={"#1B4371"} title="У вас вже є акаунт? Увійти" />
-              </View>
+              <TouchableOpacity
+                style={{ padding: 16, justifyContent: "space-evenly" }}
+                onPress={() => navigation.navigate("Login")}
+              >
+                <Text
+                  style={{
+                    color: "#1B4371",
+                    fontSize: 16,
+                  }}
+                >
+                  У вас вже є акаунт?{"  "}
+                  <Text
+                    style={{
+                      color: "#1B4371",
+                      fontSize: 20,
+                    }}
+                  >
+                    Увійти
+                  </Text>
+                </Text>
+              </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
