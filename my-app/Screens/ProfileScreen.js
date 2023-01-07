@@ -1,3 +1,18 @@
-export default function ProfilerScreen({ navigation }) {
-  return <h1>ProfilerScreen</h1>;
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+
+export default function ProfileScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <Text>ProfileScreen</Text>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

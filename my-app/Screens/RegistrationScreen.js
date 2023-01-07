@@ -13,9 +13,12 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
+  Image,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 
 const images = require("../assets/Images/background.png");
+const imageButton = require("../assets/Icons/union.svg");
 
 const initialSate = {
   login: "",
@@ -69,9 +72,11 @@ export default function RegistrationScreen({ navigation }) {
             >
               <View style={styles.avatarContainer}>
                 <View style={styles.avatar}></View>
-                <TouchableOpacity style={styles.buttonContainer}>
-                  <Text style={styles.buttonText}>+</Text>
-                </TouchableOpacity>
+                {/* <TouchableOpacity style={styles.buttonContainer}> */}
+                <View style={styles.buttonContainer}>
+                  <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+                </View>
+                {/* </TouchableOpacity> */}
               </View>
               <Text style={styles.text}>Реєстрація</Text>
               <TextInput
@@ -202,14 +207,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    width: 25,
-    height: 25,
     top: -70,
     left: 47,
-    borderWidth: 2,
     borderRadius: 50,
     backgroundColor: "#fff",
-    borderColor: "#FF6C00",
     justifyContent: "center",
     alignItems: "center",
   },
