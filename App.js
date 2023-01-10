@@ -18,5 +18,6 @@ const styles = StyleSheet.create({
     position: "relative",
     backgroundColor: "#fff",
     justifyContent: "center",
+    backgroundColor: "#fff",
   },
 });
