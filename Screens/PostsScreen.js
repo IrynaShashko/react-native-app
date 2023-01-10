@@ -20,6 +20,9 @@ export default function PostsScreen({ navigation, route }) {
     }
   }, [route.params]);
 
+  const comment = () => {
+    navigation.navigate("Coments");
+  };
   console.log("posts", posts);
 
   return (
@@ -42,7 +45,7 @@ export default function PostsScreen({ navigation, route }) {
                 justifyContent: "space-between",
               }}
             >
-              <TouchableOpacity>
+              <TouchableOpacity onPress={comment}>
                 <EvilIcons name="comment" size={24} color="#bdbdbd" />
               </TouchableOpacity>
               <Text style={{ fontSize: 16 }}>
