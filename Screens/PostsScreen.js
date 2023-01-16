@@ -1,68 +1,24 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { EvilIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
+import React from "react";
+import { moduleName } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import DefaultScreenPosts from "../Screens/DefaultScreenPosts";
+import CommentsScreen from "../Screens/CommentsScreen";
+import MapScreen from "../Screens/MapScreen";
 
-export default function PostsScreen({ navigation, route }) {
-  const [posts, setPosts] = useState([]);
+const NestedScreen = createNativeStackNavigator();
 
-  useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
-
-  const comment = () => {
-    navigation.navigate("Coments");
-  };
-  console.log("posts", posts);
-
+const PostsScreen = () => {
   return (
-    <View style={styles.container}>
-      <MaterialIcons name="logout" size={24} color="#BDBDBD" />
-      <FlatList
-        data={posts}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 20 }}>
-            <Image
-              source={{ uri: item.photo }}
-              style={{ height: 200, marginHorizontal: 20, borderRadius: 8 }}
-            />
-            <Text style={{ marginLeft: 20, fontSize: 16 }}>{item.text}</Text>
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <TouchableOpacity onPress={comment}>
-                <EvilIcons name="comment" size={24} color="#bdbdbd" />
-              </TouchableOpacity>
-              <Text style={{ fontSize: 16 }}>
-                <AntDesign name="enviromento" size={18} color="#bdbdbd" />
-                {item.location}
-              </Text>
-            </View>
-          </View>
-        )}
+    <NestedScreen.Navigator>
+      <NestedScreen.Screen
+        options={{ headerShown: false }}
+        name="DefaultScreen"
+        component={DefaultScreenPosts}
       />
-    </View>
+      <NestedScreen.Screen name="Comments" component={CommentsScreen} />
+      <NestedScreen.Screen name="Map" component={MapScreen} />
+    </NestedScreen.Navigator>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-  },
-});
+export default PostsScreen;

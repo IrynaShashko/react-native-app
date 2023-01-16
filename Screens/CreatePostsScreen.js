@@ -1,5 +1,5 @@
 import { Camera, CameraType } from "expo-camera";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   View,
   Image,
 } from "react-native";
+import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -23,23 +24,34 @@ export default function CreatePostsScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [location, setLocation] = useState(null);
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
 
-  if (!permission) {
-    return <View />;
-  }
+  // if (!permission) {
+  //   return <View />;
+  // }
 
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: "center" }}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  }
+  // if (!permission.granted) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Text style={{ textAlign: "center" }}>
+  //         We need your permission to show the camera
+  //       </Text>
+  //       <Button onPress={requestPermission} title="grant permission" />
+  //     </View>
+  //   );
+  // }
+
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       setErrorMsg("Permission to access location was denied");
+  //       return;
+  //     }
+  //   })();
+  // }, []);
 
   function toggleCameraType() {
     setType((current) =>
@@ -48,13 +60,29 @@ export default function CreatePostsScreen({ navigation }) {
   }
 
   const takePhoto = async () => {
+    // let { status } = await Location.requestForegroundPermissionsAsync();
+    // if (status !== "granted") {
+    //   setErrorMsg("Permission to access location was denied");
+    //   return;
+    // }
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
+    const location = await Location.getCurrentPositionAsync({});
+    const coords = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+
+    setLocation(coords);
     setState((prevState) => ({ ...prevState, photo: photo.uri }));
+    setState((prevState) => ({ ...prevState, location: location.timestamp }));
+    console.log("location---->", location);
+    console.log("state", state);
   };
 
   const sendPhoto = () => {
-    navigation.navigate("Posts", state);
+    console.log("state", state);
+    navigation.navigate("DefaultScreen", state);
     setState(initialState);
     setPhoto(null);
   };

@@ -6,7 +6,6 @@ import { Feather } from "@expo/vector-icons";
 
 const AuthStack = createNativeStackNavigator();
 const MainTab = createBottomTabNavigator();
-const SectionStack = createNativeStackNavigator();
 
 import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
@@ -44,16 +43,18 @@ export const useRoute = (isAuth) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => {
-            const iconColor = focused ? "#fff" : "#212121";
-            const background = focused ? "#FF6C00" : "#fff";
             return (
               <View
                 style={{
                   ...styles.iconContainer,
-                  backgroundColor: background,
+                  backgroundColor: focused ? "#FF6C00" : "#fff",
                 }}
               >
-                <AntDesign name="appstore-o" size={size} color={iconColor} />
+                <AntDesign
+                  name="appstore-o"
+                  size={size}
+                  color={focused ? "#fff" : "#212121"}
+                />
               </View>
             );
           },
@@ -66,18 +67,19 @@ export const useRoute = (isAuth) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => {
-            const iconColor = focused ? "#fff" : "#212121";
-            const background = focused ? "#FF6C00" : "#fff";
             return (
               <View
                 style={{
                   ...styles.iconContainer,
-                  backgroundColor: background,
+                  backgroundColor: focused ? "#FF6C00" : "#fff",
                 }}
               >
-                <AntDesign name="plus" size={size} color={iconColor} />
+                <AntDesign
+                  name="plus"
+                  size={size}
+                  color={focused ? "#fff" : "#212121"}
+                />
               </View>
-              // <AntDesign name="plus" size={size} color={color} />
             );
           },
         }}
@@ -88,18 +90,19 @@ export const useRoute = (isAuth) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => {
-            const iconColor = focused ? "#fff" : "#212121";
-            const background = focused ? "#FF6C00" : "#fff";
             return (
               <View
                 style={{
                   ...styles.iconContainer,
-                  backgroundColor: background,
+                  backgroundColor: focused ? "#FF6C00" : "#fff",
                 }}
               >
-                <Feather name="user" size={size} color={iconColor} />
+                <Feather
+                  name="user"
+                  size={size}
+                  color={focused ? "#fff" : "#212121"}
+                />
               </View>
-              //   <Feather name="user" size={size} color={color} />
             );
           },
         }}
@@ -114,7 +117,6 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 70,
     height: 40,
-    // backgroundColor: "#FF6C00",
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
