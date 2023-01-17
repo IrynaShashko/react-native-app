@@ -16,6 +16,8 @@ import {
   Image,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../redux/auth/authOperations";
 
 const images = require("../assets/Images/background.png");
 const imageButton = require("../assets/Icons/union.svg");
@@ -30,6 +32,8 @@ export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = () => {
@@ -46,6 +50,7 @@ export default function RegistrationScreen({ navigation }) {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     console.log(state);
+    dispatch(authSignUpUser(state));
     setState(initialSate);
   };
 

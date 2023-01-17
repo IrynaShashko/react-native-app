@@ -16,7 +16,8 @@ import { AntDesign } from "@expo/vector-icons";
 
 const initialState = {
   text: "",
-  location: "",
+  latitude: null,
+  longitude: null,
   photo: "",
 };
 
@@ -74,10 +75,15 @@ export default function CreatePostsScreen({ navigation }) {
     };
 
     setLocation(coords);
+    setState((prevState) => ({
+      ...prevState,
+      latitude: location.coords.latitude,
+    }));
+    setState((prevState) => ({
+      ...prevState,
+      longitude: location.coords.longitude,
+    }));
     setState((prevState) => ({ ...prevState, photo: photo.uri }));
-    setState((prevState) => ({ ...prevState, location: location.timestamp }));
-    console.log("location---->", location);
-    console.log("state", state);
   };
 
   const sendPhoto = () => {

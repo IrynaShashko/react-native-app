@@ -14,14 +14,13 @@ import { AntDesign } from "@expo/vector-icons";
 
 export default function DefaultScreenPosts({ navigation, route }) {
   const [posts, setPosts] = useState([]);
+  console.log("posts in default--->", posts);
 
   useEffect(() => {
     if (route.params) {
       setPosts((prevState) => [...prevState, route.params]);
     }
   }, [route.params]);
-
-  console.log("posts", posts);
 
   return (
     <View style={styles.container}>
@@ -50,7 +49,9 @@ export default function DefaultScreenPosts({ navigation, route }) {
               >
                 <EvilIcons name="comment" size={24} color="#bdbdbd" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate("Map")}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Map", posts.latitude)}
+              >
                 <Text style={{ fontSize: 16 }}>
                   <AntDesign name="enviromento" size={18} color="#bdbdbd" />
                   {item.location}

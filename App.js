@@ -2,12 +2,16 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { useRoute } from "./router";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 export default function App() {
-  const routing = useRoute(true);
+  const routing = useRoute(false);
   return (
     <View style={styles.container}>
-      <NavigationContainer>{routing}</NavigationContainer>
+      <Provider store={store}>
+        <NavigationContainer>{routing}</NavigationContainer>
+      </Provider>
     </View>
   );
 }
