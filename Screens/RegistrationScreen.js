@@ -18,9 +18,17 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../redux/auth/authOperations";
+import Apploading from "expo-app-loading";
+import * as Font from "expo-font";
+
+const loadApplication = async () => {
+  await Font.loadAsync({
+    "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
+    "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
+  });
+};
 
 const images = require("../assets/Images/background.png");
-const imageButton = require("../assets/Icons/union.svg");
 
 const initialSate = {
   login: "",
@@ -59,7 +67,16 @@ export default function RegistrationScreen({ navigation }) {
     Keyboard.dismiss();
     setState(initialSate);
   };
-
+  const [isReady, setIsReady] = useState(false);
+  if (!isReady) {
+    return (
+      <Apploading
+        startAsync={loadApplication}
+        onFinish={() => setIsReady(true)}
+        onError={console.warn}
+      />
+    );
+  }
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <ImageBackground style={styles.image} source={images}>
@@ -132,13 +149,17 @@ export default function RegistrationScreen({ navigation }) {
                 />
               </View>
               <TouchableOpacity
-                style={{ padding: 16, justifyContent: "space-evenly" }}
+                style={{
+                  padding: 16,
+                  justifyContent: "space-evenly",
+                }}
                 onPress={() => navigation.navigate("Login")}
               >
                 <Text
                   style={{
                     color: "#1B4371",
                     fontSize: 16,
+                    fontFamily: "OpenSans-Light",
                   }}
                 >
                   У вас вже є акаунт?{"  "}
@@ -146,6 +167,7 @@ export default function RegistrationScreen({ navigation }) {
                     style={{
                       color: "#1B4371",
                       fontSize: 20,
+                      fontFamily: "OpenSans-Light",
                     }}
                   >
                     Увійти
@@ -174,6 +196,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
   },
   text: {
+    fontFamily: "OpenSans-Light",
     fontSize: 30,
     marginBottom: 33,
   },
@@ -184,6 +207,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
+    fontFamily: "OpenSans-Light",
     height: 50,
     borderWidth: 1,
     borderRadius: 8,
@@ -220,6 +244,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
+    fontFamily: "OpenSans-Light",
     position: "absolute",
     top: -10,
     fontSize: 30,

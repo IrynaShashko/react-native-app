@@ -13,6 +13,15 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
 } from "react-native";
+import Apploading from "expo-app-loading";
+import * as Font from "expo-font";
+
+const loadApplication = async () => {
+  await Font.loadAsync({
+    "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
+    "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
+  });
+};
 
 const images = require("../assets/Images/background.png");
 
@@ -50,6 +59,16 @@ export default function LoginScreen({ navigation }) {
     setState(initialSate);
   };
 
+  const [isReady, setIsReady] = useState(false);
+  if (!isReady) {
+    return (
+      <Apploading
+        startAsync={loadApplication}
+        onFinish={() => setIsReady(true)}
+        onError={console.warn}
+      />
+    );
+  }
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <ImageBackground style={styles.image} source={images}>
@@ -103,13 +122,17 @@ export default function LoginScreen({ navigation }) {
                 />
               </View>
               <TouchableOpacity
-                style={{ padding: 16, justifyContent: "space-evenly" }}
+                style={{
+                  padding: 16,
+                  justifyContent: "space-evenly",
+                }}
                 onPress={() => navigation.navigate("Register")}
               >
                 <Text
                   style={{
                     color: "#1B4371",
                     fontSize: 16,
+                    fontFamily: "OpenSans-Light",
                   }}
                 >
                   Немає акаунта?{"  "}
@@ -117,6 +140,7 @@ export default function LoginScreen({ navigation }) {
                     style={{
                       color: "#1B4371",
                       fontSize: 20,
+                      fontFamily: "OpenSans-Light",
                     }}
                   >
                     Зареєструватись
@@ -144,6 +168,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
   },
   text: {
+    fontFamily: "OpenSans-Light",
     fontSize: 30,
     marginBottom: 33,
   },
@@ -154,6 +179,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
+    fontFamily: "OpenSans-Light",
     height: 50,
     borderWidth: 1,
     borderRadius: 8,
@@ -163,6 +189,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   button: {
+    fontFamily: "OpenSans-Light",
     backgroundColor: "#FF6C00",
     borderRadius: 50,
     paddingVertical: 8,
