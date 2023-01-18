@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import Apploading from "expo-app-loading";
 import * as Font from "expo-font";
+import { auth } from "./firebase/config";
 
 const loadApplication = async () => {
   await Font.loadAsync({
@@ -17,7 +18,17 @@ const loadApplication = async () => {
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
-  const routing = useRoute(false);
+  const [user, setUser] = useState(null);
+
+  auth.onAuthStateChanged((user) => {
+    setUser(user);
+    // if (user) {
+    //   // User is signed in.
+    // }
+  });
+
+  const routing = useRoute(user);
+  // const routing = useRoute(false);
   if (!isReady) {
     return (
       <Apploading

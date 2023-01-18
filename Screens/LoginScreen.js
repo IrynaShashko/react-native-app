@@ -13,6 +13,8 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../redux/auth/authOperations";
 import Apploading from "expo-app-loading";
 import * as Font from "expo-font";
 
@@ -35,6 +37,8 @@ export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width;
@@ -50,6 +54,7 @@ export default function LoginScreen({ navigation }) {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     console.log(state);
+    dispatch(authSignInUser(state));
     setState(initialSate);
   };
 

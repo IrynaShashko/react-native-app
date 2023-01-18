@@ -14,7 +14,6 @@ import { AntDesign } from "@expo/vector-icons";
 
 export default function DefaultScreenPosts({ navigation, route }) {
   const [posts, setPosts] = useState([]);
-  console.log("posts in default--->", posts);
 
   useEffect(() => {
     if (route.params) {
