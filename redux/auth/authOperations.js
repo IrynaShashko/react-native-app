@@ -13,7 +13,7 @@ export const authSignUpUser =
       await createUserWithEmailAndPassword(auth, email, password);
       const user = await auth.currentUser;
       console.log("user--->", user);
-      const name = (user.displayName = login);
+      const name = await (user.displayName = login);
       console.log("name---->", name);
       const { uid, displayName } = await auth.currentUser;
       console.log("uid, displayName--->", uid, displayName);
@@ -42,3 +42,12 @@ export const authSignInUser =
     }
   };
 export const authSignOutUser = () => async (dispatch, getState) => {};
+
+export const authStateChangeUser = () => async (dispatch, getState) => {
+  await auth.onAuthStateChanged((user) => {
+    setUser(user);
+    // if (user) {
+    //   // User is signed in.
+    // }
+  });
+};

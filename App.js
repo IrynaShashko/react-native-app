@@ -1,13 +1,10 @@
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { useRoute } from "./router";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import Apploading from "expo-app-loading";
 import * as Font from "expo-font";
-import { auth } from "./firebase/config";
+import Main from "./component/main";
 
 const loadApplication = async () => {
   await Font.loadAsync({
@@ -18,17 +15,7 @@ const loadApplication = async () => {
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
-  const [user, setUser] = useState(null);
 
-  auth.onAuthStateChanged((user) => {
-    setUser(user);
-    // if (user) {
-    //   // User is signed in.
-    // }
-  });
-
-  const routing = useRoute(user);
-  // const routing = useRoute(false);
   if (!isReady) {
     return (
       <Apploading
@@ -41,7 +28,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Provider store={store}>
-        <NavigationContainer>{routing}</NavigationContainer>
+        <Main />
       </Provider>
     </View>
   );
