@@ -13,11 +13,8 @@ export const authSignUpUser =
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       const user = await auth.currentUser;
-      console.log("user--->", user);
-      const name = await (user.displayName = login);
-      console.log("name---->", name);
+      await (user.displayName = login);
       const { uid, displayName } = await auth.currentUser;
-      console.log("uid, displayName--->", uid, displayName);
       dispatch(
         updateUserProfile({
           userId: uid,
@@ -36,6 +33,7 @@ export const authSignInUser =
   async (dispatch, getState) => {
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
+
       console.log("user", user);
     } catch (error) {
       console.log("error", error);
