@@ -6,10 +6,13 @@ import { authSignOutUser } from "../redux/auth/authOperations";
 
 export default function ProfileScreen({ navigation }) {
   const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <View style={styles.container}>
       <Text>ProfileScreen</Text>
-      <Button title="sign out" onPress={() => dispatch(authSignOutUser())} />
+      <Button title="sign out" onPress={signOut} />
     </View>
   );
 }
