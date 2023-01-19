@@ -41,13 +41,22 @@ export const authSignInUser =
       console.log("error.message", error.message);
     }
   };
-export const authSignOutUser = () => async (dispatch, getState) => {};
+export const authSignOutUser = () => async (dispatch, getState) => {
+  await auth.signOut();
+  dispatch(authSlice.actions.authSignOut());
+};
 
 export const authStateChangeUser = () => async (dispatch, getState) => {
   await auth.onAuthStateChanged((user) => {
-    setUser(user);
-    // if (user) {
-    //   // User is signed in.
-    // }
+    if (user) {
+      dispatch(authSlice.actions.authStateChange({ stateChange: true }));
+
+      dispatch(
+        authSlice.actions.updateUserProfile({
+          userId: user.uid,
+          login: user.displayName,
+        })
+      );
+    }
   });
 };
