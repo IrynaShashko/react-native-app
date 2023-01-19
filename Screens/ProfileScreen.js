@@ -1,7 +1,8 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { View, Text, Button, StyleSheet } from "react-native";
-import { auth } from "../firebase/config";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+
 import { authSignOutUser } from "../redux/auth/authOperations";
 
 export default function ProfileScreen({ navigation }) {
@@ -11,8 +12,9 @@ export default function ProfileScreen({ navigation }) {
   };
   return (
     <View style={styles.container}>
-      <Text>ProfileScreen</Text>
-      <Button title="sign out" onPress={signOut} />
+      <TouchableOpacity onPress={signOut}>
+        <MaterialIcons name="logout" size={30} color="#BDBDBD" />
+      </TouchableOpacity>
     </View>
   );
 }

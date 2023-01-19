@@ -8,7 +8,6 @@ import {
   Button,
   TouchableOpacity,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -23,7 +22,6 @@ export default function DefaultScreenPosts({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <MaterialIcons name="logout" size={24} color="#BDBDBD" />
       <FlatList
         data={posts}
         keyExtractor={(item, index) => index.toString()}
