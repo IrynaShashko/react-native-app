@@ -1,6 +1,15 @@
 import { Camera, CameraType } from "expo-camera";
 import { useState, useEffect } from "react";
 import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  FirebaseStorage,
+} from "firebase/storage";
+import { db } from "../firebase/config";
+// import firestore from "@react-native-firebase/firestore";
+import {
   Button,
   StyleSheet,
   Text,
@@ -29,31 +38,6 @@ export default function CreatePostsScreen({ navigation }) {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
 
-  // if (!permission) {
-  //   return <View />;
-  // }
-
-  // if (!permission.granted) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <Text style={{ textAlign: "center" }}>
-  //         We need your permission to show the camera
-  //       </Text>
-  //       <Button onPress={requestPermission} title="grant permission" />
-  //     </View>
-  //   );
-  // }
-
-  // useEffect(() => {
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       setErrorMsg("Permission to access location was denied");
-  //       return;
-  //     }
-  //   })();
-  // }, []);
-
   function toggleCameraType() {
     setType((current) =>
       current === CameraType.back ? CameraType.front : CameraType.back
@@ -61,11 +45,6 @@ export default function CreatePostsScreen({ navigation }) {
   }
 
   const takePhoto = async () => {
-    // let { status } = await Location.requestForegroundPermissionsAsync();
-    // if (status !== "granted") {
-    //   setErrorMsg("Permission to access location was denied");
-    //   return;
-    // }
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
     const location = await Location.getCurrentPositionAsync({});
@@ -86,11 +65,32 @@ export default function CreatePostsScreen({ navigation }) {
     setState((prevState) => ({ ...prevState, photo: photo.uri }));
   };
 
-  const sendPhoto = () => {
-    console.log("state", state);
+  const sendPhoto = async () => {
+    await uploadPhotoToServer();
+    console.log("state in send--->", state);
     navigation.navigate("DefaultScreen", state);
     setState(initialState);
     setPhoto(null);
+  };
+
+  const uploadPhotoToServer = async () => {
+    const storage = getStorage();
+    const uniquePostId = Date.now().toString();
+    const storageRef = ref(storage, `postImages/${uniquePostId}`);
+    const response = await fetch(photo);
+    const file = await response.blob();
+
+    await uploadBytes(storageRef, file).then(() => {
+      console.log(`photo uploaded`);
+    });
+    await getDownloadURL(storageRef).then((item) => {
+      console.log("download---->", item);
+      setState((prevState) => ({
+        ...prevState,
+        photo: item,
+      }));
+      console.log("state.photo in upload--->", state.photo);
+    });
   };
 
   return (
@@ -239,3 +239,22 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
+
+//                 __________    ___________     ________     __      __    ____________        _________    __      __    __________
+//                 |  ________|  |  _______  \   /  ____  \   |  \    |  |  |____    ____|      |   ______|  |  \    |  |  |   _____  \
+//                 |  |_____     | |       | |  |  |    |  |  |   \   |  |       |  |           |  |______   |   \   |  |  |  |     |  |
+//                 |   _____|    | |_______| |  |  |    |  |  |    \  |  |       |  |     ____  |  |______|  |    \  |  |  |  |     |  |
+//                 |  |          |  ____   __/  |  |    |  |  |  |\ \ |  |       |  |    |____| |  |         |  |\ \ |  |  |  |     |  |
+//                |  |          |  |   \  \    |  |____|  |  |  | \ \|  |       |  |           |  |______   |  | \ \|  |  |  |_____|  |
+//                 |__|          |__|    \__\    \________/   |__|  \____|       |__|           |_________|  |__|  \____|  |__________/
+
+//                                                                     ____    ____
+//                                                                    /    \  /    \
+//                                                                   |      \/      |
+//                                                                    \            /
+//                                                                      \          /
+//                                                                       \        /
+//                                                                        \      /
+//                                                                         \    /
+//                                                                          \  /
+//                                                                           \/
