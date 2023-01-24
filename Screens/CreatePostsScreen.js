@@ -18,25 +18,39 @@ import {
   View,
   Image,
 } from "react-native";
+import { useSelector } from "react-redux";
 import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-
-const initialState = {
-  text: "",
-  latitude: null,
-  longitude: null,
-  photo: "",
-};
+import { collection, doc, setDoc, addDoc } from "firebase/firestore";
 
 export default function CreatePostsScreen({ navigation }) {
-  const [state, setState] = useState(initialState);
   const [camera, setCamera] = useState(null);
+  const [text, setText] = useState("");
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
+  const [textLocation, setTextLocation] = useState("");
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
+
+  const { userId, login } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permissio to access location was denied");
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+
+      setLocation(coords);
+    })();
+  }, []);
 
   function toggleCameraType() {
     setType((current) =>
@@ -47,30 +61,29 @@ export default function CreatePostsScreen({ navigation }) {
   const takePhoto = async () => {
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
-    const location = await Location.getCurrentPositionAsync({});
-    const coords = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
-
-    setLocation(coords);
-    setState((prevState) => ({
-      ...prevState,
-      latitude: location.coords.latitude,
-    }));
-    setState((prevState) => ({
-      ...prevState,
-      longitude: location.coords.longitude,
-    }));
-    setState((prevState) => ({ ...prevState, photo: photo.uri }));
   };
 
   const sendPhoto = async () => {
-    await uploadPhotoToServer();
-    console.log("state in send--->", state);
-    navigation.navigate("DefaultScreen", state);
-    setState(initialState);
+    await uploadPostToServer();
+    // navigation.navigate("DefaultScreen", state);
     setPhoto(null);
+    setText("");
+    setLocation("");
+    setTextLocation("");
+  };
+
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+    console.log("photo in post--->", photo);
+    const createPost = await collection(db, "posts");
+
+    await addDoc(createPost, {
+      user: userId,
+      location: location,
+      text: text,
+      photo: photo,
+    });
+    console.log("---uploadPostToServer---");
   };
 
   const uploadPhotoToServer = async () => {
@@ -83,14 +96,10 @@ export default function CreatePostsScreen({ navigation }) {
     await uploadBytes(storageRef, file).then(() => {
       console.log(`photo uploaded`);
     });
-    await getDownloadURL(storageRef).then((item) => {
-      console.log("download---->", item);
-      setState((prevState) => ({
-        ...prevState,
-        photo: item,
-      }));
-      console.log("state.photo in upload--->", state.photo);
+    const result = await getDownloadURL(storageRef).then((item) => {
+      return item;
     });
+    return result;
   };
 
   return (
@@ -125,21 +134,17 @@ export default function CreatePostsScreen({ navigation }) {
       />
       <TextInput
         style={styles.input}
-        value={state.text}
+        value={text}
         placeholder="Назва..."
-        onChangeText={(value) =>
-          setState((prevState) => ({ ...prevState, text: value }))
-        }
+        onChangeText={(value) => setText(value)}
       />
       <View style={{ position: "relative" }}>
         <View style={styles.location}>
           <AntDesign name="enviromento" size={16} color="#bdbdbd" />
           <TextInput
-            value={state.location}
+            value={textLocation}
             placeholder="Місцевість..."
-            onChangeText={(value) =>
-              setState((prevState) => ({ ...prevState, location: value }))
-            }
+            onChangeText={(value) => setTextLocation(value)}
           />
         </View>
       </View>
@@ -176,7 +181,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: "transparent",
-    // margin: 170,
     borderRadius: 8,
   },
   toggleContainer: {
@@ -225,7 +229,6 @@ const styles = StyleSheet.create({
     left: 0,
     borderWidth: 1,
     borderColor: "#fff",
-    // height: 240,
   },
   deleteButton: {
     position: "absolute",
@@ -239,22 +242,3 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
-
-//                 __________    ___________     ________     __      __    ____________        _________    __      __    __________
-//                 |  ________|  |  _______  \   /  ____  \   |  \    |  |  |____    ____|      |   ______|  |  \    |  |  |   _____  \
-//                 |  |_____     | |       | |  |  |    |  |  |   \   |  |       |  |           |  |______   |   \   |  |  |  |     |  |
-//                 |   _____|    | |_______| |  |  |    |  |  |    \  |  |       |  |     ____  |  |______|  |    \  |  |  |  |     |  |
-//                 |  |          |  ____   __/  |  |    |  |  |  |\ \ |  |       |  |    |____| |  |         |  |\ \ |  |  |  |     |  |
-//                |  |          |  |   \  \    |  |____|  |  |  | \ \|  |       |  |           |  |______   |  | \ \|  |  |  |_____|  |
-//                 |__|          |__|    \__\    \________/   |__|  \____|       |__|           |_________|  |__|  \____|  |__________/
-
-//                                                                     ____    ____
-//                                                                    /    \  /    \
-//                                                                   |      \/      |
-//                                                                    \            /
-//                                                                      \          /
-//                                                                       \        /
-//                                                                        \      /
-//                                                                         \    /
-//                                                                          \  /
-//                                                                           \/
