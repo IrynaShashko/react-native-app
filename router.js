@@ -12,9 +12,6 @@ import LoginScreen from "./Screens/LoginScreen";
 import PostsScreen from "./Screens/PostsScreen";
 import CreatePostsScreen from "./Screens/CreatePostsScreen";
 import ProfileScreen from "./Screens/ProfileScreen";
-import Home from "./Screens/Home";
-import CommentsScreen from "./Screens/CommentsScreen";
-import MapScreen from "./Screens/MapScreen";
 
 export const useRoute = (isAuth) => {
   if (!isAuth) {

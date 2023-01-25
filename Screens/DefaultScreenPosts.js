@@ -5,21 +5,41 @@ import {
   StyleSheet,
   Image,
   FlatList,
-  Button,
   TouchableOpacity,
 } from "react-native";
+import { useSelector } from "react-redux";
+import { db } from "../firebase/config";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
 export default function DefaultScreenPosts({ navigation, route }) {
   const [posts, setPosts] = useState([]);
-  console.log("posts--->", posts);
+
+  const user = useSelector((state) => state.auth.userId);
+  console.log("user--->", user);
+
+  const getAllPosts = async () => {
+    const q = query(collection(db, "posts"), where("user", "==", user));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const posts = [];
+      console.log("querySnapshot--->", querySnapshot);
+      querySnapshot.forEach((doc) => {
+        console.log("doc--->", doc);
+        posts.push(doc.data());
+      });
+      setPosts(posts);
+      return posts;
+    });
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    // if (route.params) {
+    //   setPosts((prevState) => [...prevState, route.params]);
+    // }
+    getAllPosts();
+  }, []);
+  console.log("posts--->", posts);
 
   return (
     <View style={styles.container}>
@@ -48,11 +68,16 @@ export default function DefaultScreenPosts({ navigation, route }) {
                 <EvilIcons name="comment" size={24} color="#bdbdbd" />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => navigation.navigate("Map", posts.latitude)}
+                onPress={() =>
+                  navigation.navigate("Map", {
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                  })
+                }
               >
                 <Text style={{ fontSize: 16 }}>
                   <AntDesign name="enviromento" size={18} color="#bdbdbd" />
-                  {item.location}
+                  {item.textLocation}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -68,9 +93,10 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "relative",
     justifyContent: "center",
+    paddingTop: 50,
   },
   comment: {
     top: 0,
-    left: -100,
+    left: -135,
   },
 });

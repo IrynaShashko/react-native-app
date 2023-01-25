@@ -29,7 +29,8 @@ export default function CreatePostsScreen({ navigation }) {
   const [camera, setCamera] = useState(null);
   const [text, setText] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [location, setLocation] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [textLocation, setTextLocation] = useState("");
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -38,17 +39,14 @@ export default function CreatePostsScreen({ navigation }) {
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestPermissionsAsync();
+      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        console.log("Permissio to access location was denied");
+        console.log("Permission to access location was denied");
       }
       let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-
-      setLocation(coords);
+      console.log("location.coords.latitude----->", location.coords.latitude);
+      setLatitude(location.coords.latitude);
+      setLongitude(location.coords.longitude);
     })();
   }, []);
 
@@ -65,10 +63,11 @@ export default function CreatePostsScreen({ navigation }) {
 
   const sendPhoto = async () => {
     await uploadPostToServer();
-    // navigation.navigate("DefaultScreen", state);
+    navigation.navigate("DefaultScreen");
     setPhoto(null);
     setText("");
-    setLocation("");
+    setLatitude("");
+    setLongitude("");
     setTextLocation("");
   };
 
@@ -79,9 +78,11 @@ export default function CreatePostsScreen({ navigation }) {
 
     await addDoc(createPost, {
       user: userId,
-      location: location,
+      latitude: latitude,
+      longitude: longitude,
       text: text,
       photo: photo,
+      textLocation: textLocation,
     });
     console.log("---uploadPostToServer---");
   };
