@@ -17,7 +17,6 @@ export default function DefaultScreenPosts({ navigation, route }) {
   const [posts, setPosts] = useState([]);
 
   const user = useSelector((state) => state.auth.userId);
-  console.log("user--->", user);
 
   const getAllPosts = async () => {
     const q = query(collection(db, "posts"), where("user", "==", user));

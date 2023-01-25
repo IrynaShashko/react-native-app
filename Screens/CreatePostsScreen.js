@@ -35,7 +35,6 @@ export default function CreatePostsScreen({ navigation }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
 
   const { userId, login } = useSelector((state) => state.auth);
-  console.log("login-------------->", login);
 
   useEffect(() => {
     (async () => {
