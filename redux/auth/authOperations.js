@@ -33,8 +33,6 @@ export const authSignInUser =
   async (dispatch, getState) => {
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
-
-      console.log("result in login--->", result);
       console.log("user", user);
     } catch (error) {
       console.log("error", error);
@@ -49,7 +47,6 @@ export const authSignOutUser = () => async (dispatch, getState) => {
 export const authStateChangeUser = () => async (dispatch, getState) => {
   await auth.onAuthStateChanged((user) => {
     if (user) {
-      console.log("user----->", user);
       dispatch(authStateChange({ stateChange: true }));
 
       dispatch(
