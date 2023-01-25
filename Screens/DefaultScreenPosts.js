@@ -22,9 +22,7 @@ export default function DefaultScreenPosts({ navigation, route }) {
     const q = query(collection(db, "posts"), where("user", "==", user));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const posts = [];
-      console.log("querySnapshot--->", querySnapshot);
       querySnapshot.forEach((doc) => {
-        console.log("doc--->", doc);
         posts.push(doc.data());
       });
       setPosts(posts);
