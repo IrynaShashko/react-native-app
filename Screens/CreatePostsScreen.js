@@ -8,7 +8,6 @@ import {
   FirebaseStorage,
 } from "firebase/storage";
 import { db } from "../firebase/config";
-// import firestore from "@react-native-firebase/firestore";
 import {
   Button,
   StyleSheet,
@@ -44,11 +43,10 @@ export default function CreatePostsScreen({ navigation }) {
         console.log("Permission to access location was denied");
       }
       let location = await Location.getCurrentPositionAsync({});
-      console.log("location.coords.latitude----->", location.coords.latitude);
       setLatitude(location.coords.latitude);
       setLongitude(location.coords.longitude);
     })();
-  }, []);
+  }, [photo]);
 
   function toggleCameraType() {
     setType((current) =>
@@ -64,11 +62,7 @@ export default function CreatePostsScreen({ navigation }) {
   const sendPhoto = async () => {
     await uploadPostToServer();
     navigation.navigate("DefaultScreen");
-    setPhoto(null);
-    setText("");
-    setLatitude("");
-    setLongitude("");
-    setTextLocation("");
+    deletePost();
   };
 
   const uploadPostToServer = async () => {
@@ -84,7 +78,6 @@ export default function CreatePostsScreen({ navigation }) {
       photo: photo,
       textLocation: textLocation,
     });
-    console.log("---uploadPostToServer---");
   };
 
   const uploadPhotoToServer = async () => {
@@ -101,6 +94,14 @@ export default function CreatePostsScreen({ navigation }) {
       return item;
     });
     return result;
+  };
+
+  const deletePost = () => {
+    setPhoto(null);
+    setText("");
+    setLatitude("");
+    setLongitude("");
+    setTextLocation("");
   };
 
   return (
@@ -152,10 +153,7 @@ export default function CreatePostsScreen({ navigation }) {
       <View style={styles.submitButton}>
         <Button onPress={sendPhoto} title="Опублікувати" color={"#bdbdbd"} />
       </View>
-      <TouchableOpacity
-        // onFocus={() => setPhoto(null)}
-        style={styles.deleteButton}
-      >
+      <TouchableOpacity onPress={deletePost} style={styles.deleteButton}>
         <MaterialIcons name="delete-outline" size={24} color="#dadada" />
       </TouchableOpacity>
     </View>

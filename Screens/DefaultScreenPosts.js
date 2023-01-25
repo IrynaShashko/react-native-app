@@ -34,12 +34,8 @@ export default function DefaultScreenPosts({ navigation, route }) {
   };
 
   useEffect(() => {
-    // if (route.params) {
-    //   setPosts((prevState) => [...prevState, route.params]);
-    // }
     getAllPosts();
   }, []);
-  console.log("posts--->", posts);
 
   return (
     <View style={styles.container}>
