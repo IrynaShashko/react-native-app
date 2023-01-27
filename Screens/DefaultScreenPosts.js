@@ -21,9 +21,11 @@ export default function DefaultScreenPosts({ navigation, route }) {
   const getAllPosts = async () => {
     const q = query(collection(db, "posts"), where("user", "==", user));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      console.log("querySnapshot in default---->", querySnapshot);
       const posts = [];
       querySnapshot.forEach((doc) => {
-        posts.push(doc.data());
+        console.log("doc in default--->", doc);
+        posts.push({ ...doc.data(), id: doc.id });
       });
       setPosts(posts);
       return posts;
@@ -31,6 +33,7 @@ export default function DefaultScreenPosts({ navigation, route }) {
   };
 
   useEffect(() => {
+    // console.log("posts in default--->", posts);
     getAllPosts();
   }, []);
 
@@ -56,7 +59,12 @@ export default function DefaultScreenPosts({ navigation, route }) {
               <Text style={{ fontSize: 16 }}></Text>
               <TouchableOpacity
                 style={styles.comment}
-                onPress={() => navigation.navigate("Comments")}
+                onPress={() =>
+                  navigation.navigate("Comments", {
+                    id: item.id,
+                    photo: item.photo,
+                  })
+                }
               >
                 <EvilIcons name="comment" size={24} color="#bdbdbd" />
               </TouchableOpacity>
