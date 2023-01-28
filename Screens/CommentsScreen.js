@@ -6,6 +6,10 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Keyboard,
+  Platform,
   TextInput,
   Image,
   StyleSheet,
@@ -23,23 +27,32 @@ import { AntDesign } from "@expo/vector-icons";
 export default function CommentsScreen({ route }) {
   const [allComents, setAllComents] = useState([]);
   const [comment, setComment] = useState("");
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const { id, photo } = route.params;
-  console.log("postId--->", route.params);
 
   useEffect(() => {
-    console.log("allComents--->", allComents);
-
+    console.log("allComents in commentScreen--->", allComents);
     getAllComments();
   }, []);
 
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
   const user = useSelector((state) => state.auth.userId);
-  console.log("user", user);
+
   const createPost = async () => {
+    Keyboard.dismiss();
+    setComment("");
+    setIsShowKeyboard(false);
+    const uniquePostId = await Date.now().toString();
     const createComment = await collection(db, "posts", id, "comments");
     await addDoc(createComment, {
       id,
       comment,
       user,
+      time: uniquePostId,
     });
   };
 
@@ -49,46 +62,59 @@ export default function CommentsScreen({ route }) {
       where("id", "==", id)
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      console.log("querySnapshot---->", querySnapshot);
       const allComents = [];
-
       querySnapshot.forEach((doc) => {
-        console.log("doc--->", doc.data());
-
         allComents.push({ ...doc.data(), id: doc.id });
       });
       setAllComents(allComents);
-      console.log("allComents--->", allComents);
       return allComents;
     });
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.image}>
-        <Image source={{ uri: photo }} style={styles.image} />
-      </View>
-      <FlatList
-        data={allComents}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <>
-            <Text>{item.comment}</Text>
-          </>
-        )}
-      />
-      <View>
-        <TextInput
-          style={styles.input}
-          // value={text}
-          placeholder="Коментувати..."
-          onChangeText={setComment}
-        />
-        <TouchableOpacity style={styles.button} onPress={createPost}>
-          <AntDesign name="arrowup" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-    </View>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
+            <View style={styles.image}>
+              <Image source={{ uri: photo }} style={styles.image} />
+            </View>
+            <FlatList
+              data={allComents}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.commentContainer}>
+                  <Text>{item.comment}</Text>
+                  <Text>{item.time}</Text>
+                </View>
+              )}
+            />
+            <View
+              style={{
+                ...styles.inputContainer,
+                top: isShowKeyboard ? 40 : 250,
+              }}
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="Коментувати..."
+                onChangeText={setComment}
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+              />
+              <TouchableOpacity style={styles.button} onPress={createPost}>
+                <AntDesign name="arrowup" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -101,13 +127,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: "#fff",
   },
+  commentContainer: {
+    width: 299,
+    maxHeight: 103,
+    borderRadius: 6,
+    borderTopLeftRadius: 0,
+    backgroundColor: "#F6F6F6",
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 35,
+    marginBottom: 24,
+  },
   image: {
     height: 240,
     borderRadius: 8,
+    marginBottom: 32,
   },
   inputContainer: {
-    position: "absolute",
-    top: 300,
+    // top: 250,
   },
   input: {
     height: 50,

@@ -33,7 +33,7 @@ export default function DefaultScreenPosts({ navigation, route }) {
   };
 
   useEffect(() => {
-    // console.log("posts in default--->", posts);
+    console.log("posts in default--->", posts);
     getAllPosts();
   }, []);
 
