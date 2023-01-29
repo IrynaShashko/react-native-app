@@ -19,7 +19,7 @@ export default function DefaultScreenPosts({ navigation, route }) {
   const user = useSelector((state) => state.auth.userId);
 
   const getAllPosts = async () => {
-    const q = query(collection(db, "posts"), where("user", "==", user));
+    const q = query(collection(db, "posts"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       console.log("querySnapshot in default---->", querySnapshot);
       const posts = [];
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     position: "relative",
     justifyContent: "center",
     paddingTop: 50,
+    backgroundColor: "#fff",
   },
   comment: {
     top: 0,

@@ -1,5 +1,4 @@
 import React from "react";
-import { moduleName } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DefaultScreenPosts from "../Screens/DefaultScreenPosts";
 import CommentsScreen from "../Screens/CommentsScreen";

@@ -3,6 +3,7 @@ import { db } from "../firebase/config";
 import { useSelector } from "react-redux";
 import {
   View,
+  SafeAreaView,
   FlatList,
   Text,
   TouchableOpacity,
@@ -23,6 +24,15 @@ import {
   doc,
 } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
+// import Apploading from "expo-app-loading";
+import * as Font from "expo-font";
+
+const loadApplication = async () => {
+  await Font.loadAsync({
+    "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
+    "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
+  });
+};
 
 export default function CommentsScreen({ route }) {
   const [allComents, setAllComents] = useState([]);
@@ -61,7 +71,7 @@ export default function CommentsScreen({ route }) {
       collection(db, "posts", id, "comments"),
       where("id", "==", id)
     );
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const unsubscribe = await onSnapshot(q, (querySnapshot) => {
       const allComents = [];
       querySnapshot.forEach((doc) => {
         allComents.push({ ...doc.data(), id: doc.id });
@@ -70,51 +80,60 @@ export default function CommentsScreen({ route }) {
       return allComents;
     });
   };
+  // const [isReady, setIsReady] = useState(false);
+  // if (!isReady) {
+  //   return (
+  //     <Apploading
+  //       startAsync={loadApplication}
+  //       onFinish={() => setIsReady(true)}
+  //       onError={console.warn}
+  //     />
+  //   );
+  // }
 
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={styles.container}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-          >
-            <View style={styles.image}>
-              <Image source={{ uri: photo }} style={styles.image} />
-            </View>
-            <FlatList
-              data={allComents}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.commentContainer}>
-                  <Text>{item.comment}</Text>
-                  <Text>{item.time}</Text>
-                </View>
-              )}
-            />
-            <View
-              style={{
-                ...styles.inputContainer,
-                top: isShowKeyboard ? 40 : 250,
-              }}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="Коментувати..."
-                onChangeText={setComment}
-                onFocus={() => {
-                  setIsShowKeyboard(true);
-                }}
+    <View style={styles.container}>
+      <TouchableWithoutFeedback onPress={keyboardHide}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={styles.image}>
+            <Image source={{ uri: photo }} style={styles.image} />
+            <SafeAreaView>
+              <FlatList
+                data={allComents}
+                keyExtractor={(item, index) => item.id}
+                renderItem={({ item }) => (
+                  <View style={styles.commentContainer}>
+                    <Text style={styles.commentText}>{item.comment}</Text>
+                    <Text style={styles.commentTime}>{item.time}</Text>
+                  </View>
+                )}
               />
-              <TouchableOpacity style={styles.button} onPress={createPost}>
-                <AntDesign name="arrowup" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+            </SafeAreaView>
+          </View>
+          <View
+            style={{
+              ...styles.inputContainer,
+              top: isShowKeyboard ? 310 : 520,
+            }}
+          >
+            <TextInput
+              style={styles.input}
+              placeholder="Коментувати..."
+              value={comment}
+              onChangeText={setComment}
+              onFocus={() => {
+                setIsShowKeyboard(true);
+              }}
+            />
+            <TouchableOpacity style={styles.button} onPress={createPost}>
+              <AntDesign name="arrowup" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+    </View>
   );
 }
 
@@ -122,20 +141,19 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     flex: 1,
-    justifyContent: "space-between",
-    paddingTop: 20,
+    paddingVertical: 20,
     paddingHorizontal: 16,
     backgroundColor: "#fff",
   },
+
   commentContainer: {
     width: 299,
     maxHeight: 103,
     borderRadius: 6,
     borderTopLeftRadius: 0,
     backgroundColor: "#F6F6F6",
-    paddingTop: 16,
     paddingHorizontal: 16,
-    paddingBottom: 35,
+    paddingVertical: 16,
     marginBottom: 24,
   },
   image: {
@@ -144,7 +162,9 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   inputContainer: {
-    // top: 250,
+    position: "absolute",
+    width: 380,
+    alignSelf: "center",
   },
   input: {
     height: 50,
@@ -166,5 +186,15 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
+  },
+  commentText: {
+    fontFamily: "OpenSans-Light",
+    fontSize: 13,
+    color: "#000",
+  },
+  commentTime: {
+    fontFamily: "OpenSans-Light",
+    fontSize: 10,
+    color: "#BDBDBD",
   },
 });
