@@ -21,10 +21,8 @@ export default function DefaultScreenPosts({ navigation, route }) {
   const getAllPosts = async () => {
     const q = query(collection(db, "posts"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      console.log("querySnapshot in default---->", querySnapshot);
       const posts = [];
       querySnapshot.forEach((doc) => {
-        console.log("doc in default--->", doc);
         posts.push({ ...doc.data(), id: doc.id });
       });
       setPosts(posts);
@@ -33,7 +31,6 @@ export default function DefaultScreenPosts({ navigation, route }) {
   };
 
   useEffect(() => {
-    console.log("posts in default--->", posts);
     getAllPosts();
   }, []);
 

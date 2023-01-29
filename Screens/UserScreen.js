@@ -16,25 +16,29 @@ import { authSignOutUser } from "../redux/auth/authOperations";
 import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import { SimpleLineIcons } from "@expo/vector-icons";
 
 const images = require("../assets/Images/background.png");
 
 export default function UserScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
+  const [like, setLike] = useState(0);
   const { userId } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    console.log("posts in profile--->", posts);
     getUserPosts();
   }, []);
+
+  const PressLike = (id) => {
+    setLike((prevState) => prevState + 1);
+  };
 
   const user = useSelector((state) => state.auth.userId);
   const getUserPosts = async () => {
     const q = query(collection(db, "posts"), where("user", "==", user));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      console.log("querySnapshot in profile---->", querySnapshot);
       const posts = [];
       querySnapshot.forEach((doc) => {
-        console.log("doc in profile--->", doc);
         posts.push({ ...doc.data(), id: doc.id });
       });
       setPosts(posts);
@@ -83,30 +87,49 @@ export default function UserScreen({ navigation }) {
                   }}
                 >
                   <Text style={{ fontSize: 16 }}></Text>
-                  <TouchableOpacity
-                    style={styles.comment}
-                    onPress={() =>
-                      navigation.navigate("Comments", {
-                        id: item.id,
-                        photo: item.photo,
-                      })
-                    }
-                  >
-                    <EvilIcons name="comment" size={24} color="#bdbdbd" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("Map", {
-                        latitude: item.latitude,
-                        longitude: item.longitude,
-                      })
-                    }
-                  >
-                    <Text style={{ fontSize: 16 }}>
-                      <AntDesign name="enviromento" size={18} color="#bdbdbd" />
-                      {item.textLocation}
-                    </Text>
-                  </TouchableOpacity>
+                  <View style={{ flex: 1, flexDirection: "row" }}>
+                    <TouchableOpacity
+                      style={styles.comment}
+                      onPress={() =>
+                        navigation.navigate("Comments", {
+                          id: item.id,
+                          photo: item.photo,
+                        })
+                      }
+                    >
+                      <EvilIcons name="comment" size={24} color="#FF6C00" />
+                      <Text style={styles.text}>0</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => PressLike(item.id)}
+                      style={{
+                        marginRight: 180,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignSelf: "center",
+                      }}
+                    >
+                      <SimpleLineIcons name="like" size={16} color="#FF6C00" />
+                      <Text style={styles.text}>{like}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("Map", {
+                          latitude: item.latitude,
+                          longitude: item.longitude,
+                        })
+                      }
+                    >
+                      <Text style={{ fontSize: 16 }}>
+                        <AntDesign
+                          name="enviromento"
+                          size={18}
+                          color="#bdbdbd"
+                        />
+                        {item.textLocation}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </>
@@ -126,7 +149,7 @@ const styles = StyleSheet.create({
     width: 410,
     backgroundColor: "#fff",
     paddingTop: 30,
-    paddingBottom: 66,
+    paddingBottom: 36,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
@@ -143,7 +166,9 @@ const styles = StyleSheet.create({
   },
   comment: {
     top: 0,
-    left: -135,
+    left: -5,
+    marginRight: 27,
+    flexDirection: "row",
   },
   image: {
     flex: 1,
@@ -173,5 +198,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
+  },
+  text: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: "#212121",
   },
 });

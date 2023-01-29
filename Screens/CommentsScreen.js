@@ -41,7 +41,6 @@ export default function CommentsScreen({ route }) {
   const { id, photo } = route.params;
 
   useEffect(() => {
-    console.log("allComents in commentScreen--->", allComents);
     getAllComments();
   }, []);
 
@@ -56,13 +55,14 @@ export default function CommentsScreen({ route }) {
     Keyboard.dismiss();
     setComment("");
     setIsShowKeyboard(false);
-    const uniquePostId = await Date.now().toString();
+    const uniquePostId = await Date.now();
+    const time = new Date(uniquePostId).toLocaleString();
     const createComment = await collection(db, "posts", id, "comments");
     await addDoc(createComment, {
       id,
       comment,
       user,
-      time: uniquePostId,
+      time,
     });
   };
 

@@ -14,14 +14,9 @@ export const authSignUpUser =
       await createUserWithEmailAndPassword(auth, email, password);
       const user = await auth.currentUser;
       await (user.displayName = login);
-      console.log("user----->", user);
-      // const newUserUpdate = await auth.updateCurrentUser(user);
-      // console.log("newUserUpdate----->", newUserUpdate);
       const newUserCurrent = await auth.currentUser;
       const newUser = await auth.updateCurrentUser(newUserCurrent);
-      console.log("newUser---->", newUser);
       const newUserUpdate = await auth.currentUser;
-      console.log("newUserUpdate----->", newUserUpdate);
       const { uid, displayName } = await auth.currentUser;
       dispatch(
         updateUserProfile({
@@ -42,7 +37,6 @@ export const authSignInUser =
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
       const userCurent = await auth.currentUser;
-      console.log("userCurent--->", userCurent);
       console.log("user", user);
     } catch (error) {
       console.log("error", error);

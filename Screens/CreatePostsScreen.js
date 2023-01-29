@@ -67,7 +67,6 @@ export default function CreatePostsScreen({ navigation }) {
 
   const uploadPostToServer = async () => {
     const photo = await uploadPhotoToServer();
-    console.log("photo in post--->", photo);
     const createPost = await collection(db, "posts");
 
     await addDoc(createPost, {
