@@ -24,7 +24,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
-// import Apploading from "expo-app-loading";
+import Apploading from "expo-app-loading";
 import * as Font from "expo-font";
 
 const loadApplication = async () => {
@@ -80,59 +80,61 @@ export default function CommentsScreen({ route }) {
       return allComents;
     });
   };
-  // const [isReady, setIsReady] = useState(false);
-  // if (!isReady) {
-  //   return (
-  //     <Apploading
-  //       startAsync={loadApplication}
-  //       onFinish={() => setIsReady(true)}
-  //       onError={console.warn}
-  //     />
-  //   );
-  // }
+  const [isReady, setIsReady] = useState(false);
+  if (!isReady) {
+    return (
+      <Apploading
+        startAsync={loadApplication}
+        onFinish={() => setIsReady(true)}
+        onError={console.warn}
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={keyboardHide}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View style={styles.image}>
-            <Image source={{ uri: photo }} style={styles.image} />
-            <SafeAreaView>
-              <FlatList
-                data={allComents}
-                keyExtractor={(item, index) => item.id}
-                renderItem={({ item }) => (
-                  <View style={styles.commentContainer}>
-                    <Text style={styles.commentText}>{item.comment}</Text>
-                    <Text style={styles.commentTime}>{item.time}</Text>
-                  </View>
-                )}
-              />
-            </SafeAreaView>
-          </View>
-          <View
-            style={{
-              ...styles.inputContainer,
-              top: isShowKeyboard ? 310 : 520,
-            }}
+      {photo && (
+        <TouchableWithoutFeedback onPress={keyboardHide}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <TextInput
-              style={styles.input}
-              placeholder="Коментувати..."
-              value={comment}
-              onChangeText={setComment}
-              onFocus={() => {
-                setIsShowKeyboard(true);
+            <View style={styles.image}>
+              <Image source={{ uri: photo }} style={styles.image} />
+              <SafeAreaView>
+                <FlatList
+                  data={allComents}
+                  keyExtractor={(item, index) => item.id}
+                  renderItem={({ item }) => (
+                    <View style={styles.commentContainer}>
+                      <Text style={styles.commentText}>{item.comment}</Text>
+                      <Text style={styles.commentTime}>{item.time}</Text>
+                    </View>
+                  )}
+                />
+              </SafeAreaView>
+            </View>
+            <View
+              style={{
+                ...styles.inputContainer,
+                top: isShowKeyboard ? 350 : 520,
               }}
-            />
-            <TouchableOpacity style={styles.button} onPress={createPost}>
-              <AntDesign name="arrowup" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="Коментувати..."
+                value={comment}
+                onChangeText={setComment}
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+              />
+              <TouchableOpacity style={styles.button} onPress={createPost}>
+                <AntDesign name="arrowup" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      )}
     </View>
   );
 }

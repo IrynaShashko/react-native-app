@@ -56,9 +56,6 @@ export const authSignOutUser = () => async (dispatch, getState) => {
 
 export const authStateChangeUser = () => async (dispatch, getState) => {
   await auth.onAuthStateChanged((user) => {
-    // const state = useSelector((state) => state.auth);
-    // console.log("state in login---->", state);
-    console.log("user--->", user);
     if (user) {
       dispatch(authStateChange({ stateChange: true }));
 

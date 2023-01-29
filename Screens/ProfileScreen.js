@@ -1,54 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { db } from "../firebase/config";
-import { authSignOutUser } from "../redux/auth/authOperations";
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import UserScreen from "../Screens/UserScreen";
+import CommentsScreen from "../Screens/CommentsScreen";
+import MapScreen from "../Screens/MapScreen";
 
-export default function ProfileScreen({ navigation }) {
-  const [posts, setPosts] = useState([]);
+const NestedScreen = createNativeStackNavigator();
 
-  useEffect(() => {
-    console.log("posts in profile--->", posts);
-    getUserPosts();
-  }, []);
-
-  const user = useSelector((state) => state.auth.userId);
-  const getUserPosts = async () => {
-    const q = query(collection(db, "posts"), where("user", "==", user));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      console.log("querySnapshot in profile---->", querySnapshot);
-      const posts = [];
-      querySnapshot.forEach((doc) => {
-        console.log("doc in profile--->", doc);
-        posts.push({ ...doc.data(), id: doc.id });
-      });
-      setPosts(posts);
-      return posts;
-    });
-  };
-
-  const dispatch = useDispatch();
-  const signOut = () => {
-    dispatch(authSignOutUser());
-  };
-
+const PostsScreen = () => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={signOut}>
-        <MaterialIcons name="logout" size={30} color="#BDBDBD" />
-      </TouchableOpacity>
-    </View>
+    <NestedScreen.Navigator>
+      <NestedScreen.Screen
+        options={{ headerShown: false }}
+        name="DefaultScreen"
+        component={UserScreen}
+      />
+      <NestedScreen.Screen name="Comments" component={CommentsScreen} />
+      <NestedScreen.Screen name="Map" component={MapScreen} />
+    </NestedScreen.Navigator>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-});
+export default PostsScreen;
