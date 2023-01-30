@@ -49,19 +49,19 @@ export default function CommentsScreen({ route }) {
     Keyboard.dismiss();
   };
 
-  const user = useSelector((state) => state.auth.userId);
+  const { login } = useSelector((state) => state.auth);
 
   const createPost = async () => {
     Keyboard.dismiss();
     setComment("");
     setIsShowKeyboard(false);
     const uniquePostId = await Date.now();
-    const time = new Date(uniquePostId).toLocaleString();
+    const time = await new Date(uniquePostId).toLocaleString();
     const createComment = await collection(db, "posts", id, "comments");
     await addDoc(createComment, {
       id,
       comment,
-      user,
+      login,
       time,
     });
   };
@@ -71,7 +71,7 @@ export default function CommentsScreen({ route }) {
       collection(db, "posts", id, "comments"),
       where("id", "==", id)
     );
-    const unsubscribe = await onSnapshot(q, (querySnapshot) => {
+    await onSnapshot(q, (querySnapshot) => {
       const allComents = [];
       querySnapshot.forEach((doc) => {
         allComents.push({ ...doc.data(), id: doc.id });
@@ -107,7 +107,14 @@ export default function CommentsScreen({ route }) {
                   renderItem={({ item }) => (
                     <View style={styles.commentContainer}>
                       <Text style={styles.commentText}>{item.comment}</Text>
-                      <Text style={styles.commentTime}>{item.time}</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text
+                          style={{ ...styles.commentTime, marginRight: 10 }}
+                        >
+                          {item.login}
+                        </Text>
+                        <Text style={styles.commentTime}>{item.time}</Text>
+                      </View>
                     </View>
                   )}
                 />
