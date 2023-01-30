@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -23,20 +24,28 @@ const images = require("../assets/Images/background.png");
 export default function UserScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [like, setLike] = useState(0);
-  const { userId } = useSelector((state) => state.auth);
+  const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
+
+  const { userId, login } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getUserPosts();
+    const onChange = () => {
+      const width = Dimensions.get("window").width;
+      setDimensions(width);
+    };
+    Dimensions.addEventListener("change", onChange);
   }, []);
 
   const PressLike = (id) => {
+    console.log("id==>", id);
     setLike((prevState) => prevState + 1);
   };
 
   const user = useSelector((state) => state.auth.userId);
   const getUserPosts = async () => {
     const q = query(collection(db, "posts"), where("user", "==", user));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    onSnapshot(q, (querySnapshot) => {
       const posts = [];
       querySnapshot.forEach((doc) => {
         posts.push({ ...doc.data(), id: doc.id });
@@ -53,7 +62,12 @@ export default function UserScreen({ navigation }) {
 
   return (
     <ImageBackground style={styles.image} source={images}>
-      <View style={styles.container}>
+      <View
+        style={{
+          ...styles.container,
+          width: dimensions,
+        }}
+      >
         <View style={styles.avatarContainer}>
           <View style={styles.avatar}></View>
           {/* <TouchableOpacity style={styles.buttonContainer}> */}
@@ -65,7 +79,7 @@ export default function UserScreen({ navigation }) {
         <TouchableOpacity style={styles.logout} onPress={signOut}>
           <MaterialIcons name="logout" size={30} color="#BDBDBD" />
         </TouchableOpacity>
-        <Text style={styles.user}>{userId}</Text>
+        <Text style={styles.user}>{login}</Text>
         <FlatList
           data={posts}
           keyExtractor={(item, index) => index.toString()}
@@ -76,7 +90,14 @@ export default function UserScreen({ navigation }) {
                   source={{ uri: item.photo }}
                   style={{ height: 200, marginHorizontal: 20, borderRadius: 8 }}
                 />
-                <Text style={{ marginLeft: 20, fontSize: 16 }}>
+                <Text
+                  style={{
+                    marginLeft: 20,
+                    marginTop: 8,
+                    marginBottom: 11,
+                    fontSize: 16,
+                  }}
+                >
                   {item.text}
                 </Text>
                 <View
@@ -144,7 +165,7 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     top: 150,
-    left: 3,
+    left: 0,
     height: 549,
     width: 410,
     backgroundColor: "#fff",
