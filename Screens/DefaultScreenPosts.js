@@ -10,8 +10,7 @@ import {
 import { useSelector } from "react-redux";
 import { db } from "../firebase/config";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { EvilIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, EvilIcons } from "@expo/vector-icons";
 
 export default function DefaultScreenPosts({ navigation, route }) {
   const [posts, setPosts] = useState([]);
@@ -41,6 +40,9 @@ export default function DefaultScreenPosts({ navigation, route }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 20 }}>
+            <Text style={{ alignSelf: "center", marginBottom: 10 }}>
+              {item.login}
+            </Text>
             <Image
               source={{ uri: item.photo }}
               style={{ height: 200, marginHorizontal: 20, borderRadius: 8 }}
