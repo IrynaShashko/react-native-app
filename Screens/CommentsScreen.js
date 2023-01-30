@@ -22,6 +22,7 @@ import {
   where,
   onSnapshot,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
 import Apploading from "expo-app-loading";
@@ -39,6 +40,7 @@ export default function CommentsScreen({ route }) {
   const [comment, setComment] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const { id, photo } = route.params;
+  const [commentsLength, setCommentsLength] = useState(0);
 
   useEffect(() => {
     getAllComments();
@@ -55,6 +57,7 @@ export default function CommentsScreen({ route }) {
     Keyboard.dismiss();
     setComment("");
     setIsShowKeyboard(false);
+    setCommentsLength(allComents.length + 1);
     const uniquePostId = await Date.now();
     const time = await new Date(uniquePostId).toLocaleString();
     const createComment = await collection(db, "posts", id, "comments");
@@ -63,6 +66,10 @@ export default function CommentsScreen({ route }) {
       comment,
       login,
       time,
+    });
+    const updatePosts = doc(db, "posts", id);
+    await updateDoc(updatePosts, {
+      commentLength: allComents.length + 1,
     });
   };
 

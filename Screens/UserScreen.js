@@ -11,19 +11,27 @@ import {
   Dimensions,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase/config";
 import { authSignOutUser } from "../redux/auth/authOperations";
-import { EvilIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
-import { SimpleLineIcons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  EvilIcons,
+  SimpleLineIcons,
+  Feather,
+} from "@expo/vector-icons";
 
 const images = require("../assets/Images/background.png");
 
 export default function UserScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
-  const [like, setLike] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
 
   const { userId, login } = useSelector((state) => state.auth);
@@ -37,9 +45,12 @@ export default function UserScreen({ navigation }) {
     Dimensions.addEventListener("change", onChange);
   }, []);
 
-  const PressLike = (id) => {
-    console.log("id==>", id);
-    setLike((prevState) => prevState + 1);
+  const PressLike = async (like, id) => {
+    const newLike = like + 1;
+    const updatePosts = doc(db, "posts", id);
+    await updateDoc(updatePosts, {
+      like: newLike,
+    });
   };
 
   const user = useSelector((state) => state.auth.userId);
@@ -107,7 +118,6 @@ export default function UserScreen({ navigation }) {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Text style={{ fontSize: 16 }}></Text>
                   <View style={{ flex: 1, flexDirection: "row" }}>
                     <TouchableOpacity
                       style={styles.comment}
@@ -119,10 +129,12 @@ export default function UserScreen({ navigation }) {
                       }
                     >
                       <EvilIcons name="comment" size={24} color="#FF6C00" />
-                      <Text style={styles.text}>0</Text>
+                      <Text style={styles.text}>
+                        {item.commentLength ? item.commentLength : 0}
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={() => PressLike(item.id)}
+                      onPress={() => PressLike(item.like, item.id)}
                       style={{
                         marginRight: 180,
                         flexDirection: "row",
@@ -131,7 +143,9 @@ export default function UserScreen({ navigation }) {
                       }}
                     >
                       <SimpleLineIcons name="like" size={16} color="#FF6C00" />
-                      <Text style={styles.text}>{like}</Text>
+                      <Text style={styles.text}>
+                        {item.like ? item.like : 0}
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() =>

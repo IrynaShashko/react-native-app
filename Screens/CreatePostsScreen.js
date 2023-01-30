@@ -70,6 +70,7 @@ export default function CreatePostsScreen({ navigation }) {
       photo: photo,
       textLocation: textLocation,
       login: login,
+      like: 0,
     });
   };
 
