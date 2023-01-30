@@ -1,17 +1,10 @@
 import { Camera, CameraType } from "expo-camera";
 import { useState, useEffect } from "react";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  FirebaseStorage,
-} from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../firebase/config";
 import {
   Button,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -22,7 +15,7 @@ import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { collection, doc, setDoc, addDoc } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function CreatePostsScreen({ navigation }) {
   const [camera, setCamera] = useState(null);
@@ -76,6 +69,7 @@ export default function CreatePostsScreen({ navigation }) {
       text: text,
       photo: photo,
       textLocation: textLocation,
+      login: login,
     });
   };
 
