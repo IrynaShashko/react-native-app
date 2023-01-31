@@ -4,6 +4,7 @@ const state = {
   userId: null,
   login: null,
   email: null,
+  avatar: null,
   stateChange: false,
 };
 
@@ -14,6 +15,7 @@ const actions = {
     userId: payload.userId,
     login: payload.login,
     email: payload.email,
+    avatar: payload.avatar,
   }),
   authStateChange: (state, { payload }) => ({
     ...state,

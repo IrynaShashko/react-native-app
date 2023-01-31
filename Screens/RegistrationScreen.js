@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Camera, CameraType } from "expo-camera";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import {
   StyleSheet,
@@ -15,11 +17,15 @@ import {
   Dimensions,
   Image,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../redux/auth/authOperations";
 import Apploading from "expo-app-loading";
 import * as Font from "expo-font";
+import {
+  AntDesign,
+  MaterialIcons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 
 const loadApplication = async () => {
   await Font.loadAsync({
@@ -34,14 +40,54 @@ const initialSate = {
   login: "",
   email: "",
   password: "",
+  avatar: "",
 };
 
 export default function RegistrationScreen({ navigation }) {
+  const [camera, setCamera] = useState(null);
+  const [photo, setPhoto] = useState(null);
+  const [addAvatar, setAddAvatar] = useState(false);
+  const [avatar, setAvatar] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
+  const [type, setType] = useState(CameraType.front);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
 
   const dispatch = useDispatch();
+
+  function toggleCameraType() {
+    setType((current) => {
+      current === CameraType.front ? CameraType.back : CameraType.front;
+    });
+  }
+
+  const onAddAvatarButtonClick = () => {
+    setAddAvatar(true);
+  };
+
+  const takePhoto = async () => {
+    const photo = await camera.takePictureAsync();
+    console.log("photo in registration===>", photo);
+    await setPhoto(photo.uri);
+  };
+
+  const uploadPhotoToServer = async () => {
+    const storage = getStorage();
+    const uniquePostId = Date.now().toString();
+    const storageRef = ref(storage, `avatar/${uniquePostId}`);
+    const response = await fetch(photo);
+    const file = await response.blob();
+
+    await uploadBytes(storageRef, file).then(() => {
+      console.log(`photo uploaded`);
+    });
+    const result = await getDownloadURL(storageRef).then((item) => {
+      setState((prevState) => ({ ...prevState, avatar: item }));
+      return item;
+    });
+    return result;
+  };
 
   useEffect(() => {
     const onChange = () => {
@@ -54,12 +100,15 @@ export default function RegistrationScreen({ navigation }) {
     // };
   }, []);
 
-  const submitForm = () => {
+  const submitForm = async () => {
+    const userAvatar = await uploadPhotoToServer();
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(state);
-    dispatch(authSignUpUser(state));
+    const user = { ...state, avatar: userAvatar };
+    console.log("user====>", user);
+    dispatch(authSignUpUser(user));
     setState(initialSate);
+    setPhoto(null);
   };
 
   const keyboardHide = () => {
@@ -93,12 +142,52 @@ export default function RegistrationScreen({ navigation }) {
               }}
             >
               <View style={styles.avatarContainer}>
-                <View style={styles.avatar}></View>
-                {/* <TouchableOpacity style={styles.buttonContainer}> */}
-                <View style={styles.buttonContainer}>
-                  <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+                <View style={styles.avatar}>
+                  {addAvatar && (
+                    <Camera style={styles.camera} type={type} ref={setCamera}>
+                      {photo && (
+                        <View style={styles.takePhotoContainer}>
+                          <Image
+                            style={{ height: 120, width: 120, borderRadius: 8 }}
+                            source={{ uri: photo }}
+                          />
+                        </View>
+                      )}
+                      <View style={styles.toggleContainer}>
+                        <TouchableOpacity
+                          style={styles.toggle}
+                          onPress={toggleCameraType}
+                        >
+                          <MaterialCommunityIcons
+                            name="camera-flip"
+                            size={30}
+                            color="#e8e8e8"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.cameraContainer}>
+                        <TouchableOpacity
+                          onPress={takePhoto}
+                          style={styles.photoButton}
+                        >
+                          <MaterialIcons
+                            name="camera-alt"
+                            size={30}
+                            color="#e8e8e8"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </Camera>
+                  )}
                 </View>
-                {/* </TouchableOpacity> */}
+                <TouchableOpacity
+                  onPress={onAddAvatarButtonClick}
+                  style={styles.buttonContainer}
+                >
+                  {/* <View style={styles.buttonContainer}> */}
+                  <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+                  {/* </View> */}
+                </TouchableOpacity>
               </View>
               <Text style={styles.text}>Реєстрація</Text>
               <TextInput
@@ -194,6 +283,41 @@ const styles = StyleSheet.create({
     paddingBottom: 66,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+  },
+  camera: {
+    position: "absolute",
+    height: 120,
+    width: 120,
+    top: -50,
+    marginTop: 50,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    backgroundColor: "#f6f6f6",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  takePhotoContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    borderWidth: 1,
+    borderColor: "#fff",
+  },
+  cameraContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "transparent",
+    borderRadius: 8,
+    justifyContent: "center",
+  },
+  photoButton: {
+    position: "absolute",
+    top: 90,
+  },
+  toggleContainer: {
+    position: "absolute",
+    top: 5,
+    right: 5,
   },
   text: {
     fontFamily: "OpenSans-Light",

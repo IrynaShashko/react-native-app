@@ -94,7 +94,7 @@ export default function DefaultScreenPosts({ navigation, route }) {
                   <TouchableOpacity
                     onPress={() => PressLike(item.like, item.id)}
                     style={{
-                      marginRight: 180,
+                      marginRight: 150,
                       flexDirection: "row",
                       justifyContent: "center",
                       alignSelf: "center",

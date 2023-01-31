@@ -13,8 +13,7 @@ import {
 import { useSelector } from "react-redux";
 import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { collection, addDoc } from "firebase/firestore";
 
 export default function CreatePostsScreen({ navigation }) {
@@ -169,6 +168,7 @@ const styles = StyleSheet.create({
     borderColor: "#e8e8e8",
     backgroundColor: "#f6f6f6",
     borderRadius: 8,
+    overflow: "hidden",
   },
   cameraContainer: {
     flexDirection: "row",

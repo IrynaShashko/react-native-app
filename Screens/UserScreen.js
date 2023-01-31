@@ -33,8 +33,8 @@ const images = require("../assets/Images/background.png");
 export default function UserScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
-
-  const { userId, login } = useSelector((state) => state.auth);
+  const [userAvatar, setUserAvatar] = useState(true);
+  const { avatar, login } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getUserPosts();
@@ -80,12 +80,20 @@ export default function UserScreen({ navigation }) {
         }}
       >
         <View style={styles.avatarContainer}>
-          <View style={styles.avatar}></View>
-          {/* <TouchableOpacity style={styles.buttonContainer}> */}
-          <View style={styles.buttonContainer}>
-            <Feather name="x" size={24} color="#BDBDBD" />
+          <View style={styles.avatar}>
+            {userAvatar && (
+              <Image
+                style={{ height: 120, width: 120, borderRadius: 8 }}
+                source={{ uri: avatar }}
+              />
+            )}
           </View>
-          {/* </TouchableOpacity> */}
+          <TouchableOpacity
+            onPress={() => setUserAvatar(false)}
+            style={styles.buttonContainer}
+          >
+            <Feather name="x" size={24} color="#BDBDBD" />
+          </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.logout} onPress={signOut}>
           <MaterialIcons name="logout" size={30} color="#BDBDBD" />
@@ -136,7 +144,7 @@ export default function UserScreen({ navigation }) {
                     <TouchableOpacity
                       onPress={() => PressLike(item.like, item.id)}
                       style={{
-                        marginRight: 180,
+                        marginRight: 150,
                         flexDirection: "row",
                         justifyContent: "center",
                         alignSelf: "center",
