@@ -74,17 +74,20 @@ export default function RegistrationScreen({ navigation }) {
     const storage = getStorage();
     const uniquePostId = Date.now().toString();
     const storageRef = ref(storage, `avatar/${uniquePostId}`);
-    const response = await fetch(photo);
-    const file = await response.blob();
-
-    await uploadBytes(storageRef, file).then(() => {
-      console.log(`photo uploaded`);
-    });
-    const result = await getDownloadURL(storageRef).then((item) => {
-      setState((prevState) => ({ ...prevState, avatar: item }));
-      return item;
-    });
-    return result;
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      await uploadBytes(storageRef, file).then(() => {
+        console.log(`photo uploaded`);
+      });
+      const result = await getDownloadURL(storageRef).then((item) => {
+        setState((prevState) => ({ ...prevState, avatar: item }));
+        return item;
+      });
+      return result;
+    } catch (error) {
+      console.log("error======>", error.message);
+    }
   };
 
   useEffect(() => {
@@ -100,12 +103,19 @@ export default function RegistrationScreen({ navigation }) {
 
   const submitForm = async () => {
     const userAvatar = await uploadPhotoToServer();
-    setIsShowKeyboard(false);
-    Keyboard.dismiss();
-    const user = { ...state, avatar: userAvatar };
-    dispatch(authSignUpUser(user));
-    setState(initialSate);
-    setPhoto(null);
+    if (!userAvatar) {
+      alert("Зробіть фото!");
+      return;
+    }
+    if (userAvatar) {
+      alert("Реєстрація...Зачекайте");
+      const user = { ...state, avatar: userAvatar };
+      dispatch(authSignUpUser(user));
+      setState(initialSate);
+      setPhoto(null);
+      setIsShowKeyboard(false);
+      Keyboard.dismiss();
+    }
   };
 
   const keyboardHide = () => {
