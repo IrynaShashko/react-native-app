@@ -7,7 +7,6 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import { useSelector } from "react-redux";
 import { db } from "../firebase/config";
 import {
   collection,
@@ -20,8 +19,6 @@ import { AntDesign, EvilIcons, SimpleLineIcons } from "@expo/vector-icons";
 
 export default function DefaultScreenPosts({ navigation, route }) {
   const [posts, setPosts] = useState([]);
-
-  const user = useSelector((state) => state.auth.userId);
 
   const getAllPosts = async () => {
     const q = query(collection(db, "posts"));

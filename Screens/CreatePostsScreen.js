@@ -7,6 +7,9 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
   View,
   Image,
 } from "react-native";
@@ -23,6 +26,7 @@ export default function CreatePostsScreen({ navigation }) {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [textLocation, setTextLocation] = useState("");
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
 
@@ -40,6 +44,11 @@ export default function CreatePostsScreen({ navigation }) {
     })();
   }, [photo]);
 
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
   function toggleCameraType() {
     setType((current) =>
       current === CameraType.back ? CameraType.front : CameraType.back
@@ -55,6 +64,8 @@ export default function CreatePostsScreen({ navigation }) {
     await uploadPostToServer();
     navigation.navigate("DefaultScreen");
     deletePost();
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
   };
 
   const uploadPostToServer = async () => {
@@ -99,53 +110,72 @@ export default function CreatePostsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={type} ref={setCamera}>
-        {photo && (
-          <View style={styles.takePhotoContainer}>
-            <Image
-              style={{ height: 238, width: 380, borderRadius: 8 }}
-              source={{ uri: photo }}
+      <TouchableWithoutFeedback onPress={keyboardHide}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <Camera
+            style={{ ...styles.camera, marginTop: isShowKeyboard ? 20 : 50 }}
+            type={type}
+            ref={setCamera}
+          >
+            {photo && (
+              <View style={styles.takePhotoContainer}>
+                <Image
+                  style={{ height: 238, width: 380, borderRadius: 8 }}
+                  source={{ uri: photo }}
+                />
+              </View>
+            )}
+            <View style={styles.toggleContainer}>
+              <TouchableOpacity
+                style={styles.toggle}
+                onPress={toggleCameraType}
+              >
+                <MaterialCommunityIcons
+                  name="camera-flip"
+                  size={30}
+                  color="#e8e8e8"
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.cameraContainer}>
+              <TouchableOpacity onPress={takePhoto} style={styles.button}>
+                <MaterialIcons name="camera-alt" size={24} color="#e8e8e8" />
+              </TouchableOpacity>
+            </View>
+          </Camera>
+          <TextInput
+            style={styles.input}
+            value={text}
+            placeholder="Назва..."
+            onFocus={() => {
+              setIsShowKeyboard(true);
+            }}
+            onChangeText={(value) => setText(value)}
+          />
+          <View style={{ position: "relative" }}>
+            <View style={styles.location}>
+              <AntDesign name="enviromento" size={16} color="#bdbdbd" />
+              <TextInput
+                value={textLocation}
+                placeholder="Місцевість..."
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+                onChangeText={(value) => setTextLocation(value)}
+              />
+            </View>
+          </View>
+          <View style={styles.submitButton}>
+            <Button
+              onPress={sendPhoto}
+              title="Опублікувати"
+              color={"#bdbdbd"}
             />
           </View>
-        )}
-        <View style={styles.toggleContainer}>
-          <TouchableOpacity style={styles.toggle} onPress={toggleCameraType}>
-            <MaterialCommunityIcons
-              name="camera-flip"
-              size={30}
-              color="#e8e8e8"
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.cameraContainer}>
-          <TouchableOpacity onPress={takePhoto} style={styles.button}>
-            <MaterialIcons name="camera-alt" size={24} color="#e8e8e8" />
-          </TouchableOpacity>
-        </View>
-      </Camera>
-      <TextInput
-        style={{ fontSize: 14, paddingTop: 10, paddingBottom: 10 }}
-        placeholder="Загрузіть фото"
-      />
-      <TextInput
-        style={styles.input}
-        value={text}
-        placeholder="Назва..."
-        onChangeText={(value) => setText(value)}
-      />
-      <View style={{ position: "relative" }}>
-        <View style={styles.location}>
-          <AntDesign name="enviromento" size={16} color="#bdbdbd" />
-          <TextInput
-            value={textLocation}
-            placeholder="Місцевість..."
-            onChangeText={(value) => setTextLocation(value)}
-          />
-        </View>
-      </View>
-      <View style={styles.submitButton}>
-        <Button onPress={sendPhoto} title="Опублікувати" color={"#bdbdbd"} />
-      </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
       <TouchableOpacity onPress={deletePost} style={styles.deleteButton}>
         <MaterialIcons name="delete-outline" size={24} color="#dadada" />
       </TouchableOpacity>
@@ -163,7 +193,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 240,
-    marginTop: 50,
+    // marginTop: 50,
     borderWidth: 1,
     borderColor: "#e8e8e8",
     backgroundColor: "#f6f6f6",

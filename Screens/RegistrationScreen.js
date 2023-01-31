@@ -47,7 +47,6 @@ export default function RegistrationScreen({ navigation }) {
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [addAvatar, setAddAvatar] = useState(false);
-  const [avatar, setAvatar] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
@@ -68,7 +67,6 @@ export default function RegistrationScreen({ navigation }) {
 
   const takePhoto = async () => {
     const photo = await camera.takePictureAsync();
-    console.log("photo in registration===>", photo);
     await setPhoto(photo.uri);
   };
 
@@ -105,7 +103,6 @@ export default function RegistrationScreen({ navigation }) {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     const user = { ...state, avatar: userAvatar };
-    console.log("user====>", user);
     dispatch(authSignUpUser(user));
     setState(initialSate);
     setPhoto(null);

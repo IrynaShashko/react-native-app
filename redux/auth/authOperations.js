@@ -4,14 +4,12 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../../firebase/config";
-import { useSelector } from "react-redux";
 import { authSlice } from "./authReducer";
 const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =
   ({ avatar, login, email, password }) =>
   async (dispatch, getState) => {
-    console.log("login, email, password", avatar, login, email, password);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(auth.currentUser, {
@@ -19,8 +17,6 @@ export const authSignUpUser =
         photoURL: avatar,
       });
       const { uid, displayName, photoURL } = await auth.currentUser;
-      console.log();
-      console.log(auth.currentUser);
       dispatch(
         updateUserProfile({
           userId: uid,

@@ -139,7 +139,7 @@ export default function CommentsScreen({ route }) {
             <View
               style={{
                 ...styles.inputContainer,
-                top: isShowKeyboard ? 350 : 520,
+                top: isShowKeyboard ? 310 : 520,
               }}
             >
               <TextInput
