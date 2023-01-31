@@ -9,21 +9,24 @@ import { authSlice } from "./authReducer";
 const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =
-  ({ login, email, password }) =>
+  ({ avatar, login, email, password }) =>
   async (dispatch, getState) => {
-    console.log("login, email, password", login, email, password);
+    console.log("login, email, password", avatar, login, email, password);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(auth.currentUser, {
         displayName: login,
+        photoURL: avatar,
       });
-      const { uid, displayName } = await auth.currentUser;
+      const { uid, displayName, photoURL } = await auth.currentUser;
+      console.log();
       console.log(auth.currentUser);
       dispatch(
         updateUserProfile({
           userId: uid,
           login: displayName,
           email: email,
+          avatar: photoURL,
         })
       );
     } catch (error) {
@@ -55,6 +58,7 @@ export const authStateChangeUser = () => async (dispatch, getState) => {
         userId: user.uid,
         login: user.displayName,
         email: user.email,
+        avatar: user.photoURL,
       };
       dispatch(authStateChange({ stateChange: true }));
       dispatch(updateUserProfile(userUpdateProfile));
