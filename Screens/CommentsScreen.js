@@ -51,8 +51,8 @@ export default function CommentsScreen({ route }) {
     Keyboard.dismiss();
   };
 
-  const { login } = useSelector((state) => state.auth);
-
+  const { login, avatar } = useSelector((state) => state.auth);
+  console.log("avatar", avatar);
   const createPost = async () => {
     Keyboard.dismiss();
     setComment("");
@@ -66,6 +66,7 @@ export default function CommentsScreen({ route }) {
       comment,
       login,
       time,
+      avatar,
     });
     const updatePosts = doc(db, "posts", id);
     await updateDoc(updatePosts, {
@@ -97,7 +98,7 @@ export default function CommentsScreen({ route }) {
       />
     );
   }
-
+  console.log("allComents", allComents);
   return (
     <View style={styles.container}>
       {photo && (
@@ -112,15 +113,23 @@ export default function CommentsScreen({ route }) {
                   data={allComents}
                   keyExtractor={(item, index) => item.id}
                   renderItem={({ item }) => (
-                    <View style={styles.commentContainer}>
-                      <Text style={styles.commentText}>{item.comment}</Text>
+                    <View>
                       <View style={{ flexDirection: "row" }}>
-                        <Text
-                          style={{ ...styles.commentTime, marginRight: 10 }}
-                        >
-                          {item.login}
-                        </Text>
-                        <Text style={styles.commentTime}>{item.time}</Text>
+                        <Image
+                          source={{ uri: item.avatar }}
+                          style={styles.avatar}
+                        />
+                        <View style={styles.commentContainer}>
+                          <Text style={styles.commentText}>{item.comment}</Text>
+                          <View style={{ flexDirection: "row" }}>
+                            <Text
+                              style={{ ...styles.commentTime, marginRight: 10 }}
+                            >
+                              {item.login}
+                            </Text>
+                            <Text style={styles.commentTime}>{item.time}</Text>
+                          </View>
+                        </View>
                       </View>
                     </View>
                   )}
@@ -161,7 +170,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: "#fff",
   },
-
   commentContainer: {
     width: 299,
     maxHeight: 103,
@@ -171,11 +179,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     marginBottom: 24,
+    marginLeft: 10,
+  },
+  avatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 50,
   },
   image: {
     height: 240,
     borderRadius: 8,
-    marginBottom: 32,
+    marginBottom: 10,
   },
   inputContainer: {
     position: "absolute",
