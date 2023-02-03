@@ -36,7 +36,9 @@
     "react-native-web": "~0.18.9",
     "react-dom": "18.1.0",
     "@expo/webpack-config": "^0.17.2",
-    "expo-updates": "~0.15.6"
+    "expo-updates": "~0.15.6",
+    "expo-splash-screen": "~0.17.5",
+    "expo-image-picker": "~14.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

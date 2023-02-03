@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { db } from "../firebase/config";
 import { useSelector } from "react-redux";
 import {
@@ -25,34 +25,76 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
-import Apploading from "expo-app-loading";
+import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
 
-const loadApplication = async () => {
-  await Font.loadAsync({
-    "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
-    "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
-  });
-};
+// SplashScreen.preventAutoHideAsync();
 
 export default function CommentsScreen({ route }) {
+  // const [appIsReady, setAppIsReady] = useState(false);
   const [allComents, setAllComents] = useState([]);
   const [comment, setComment] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const { id, photo } = route.params;
   const [commentsLength, setCommentsLength] = useState(0);
+  const { id, photo } = route.params;
+
+  // useEffect(() => {
+  //   async function prepare() {
+  //     try {
+  //       await Font.loadAsync({
+  //         "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
+  //         "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
+  //       });
+  //       await getAllComments();
+  //       console.log("allComents", allComents);
+
+  //       await new Promise((resolve) => setTimeout(resolve, 2000));
+  //     } catch (e) {
+  //       console.warn(e);
+  //     } finally {
+  //       setAppIsReady(true);
+  //     }
+  //   }
+
+  //   prepare();
+  // }, []);
 
   useEffect(() => {
     getAllComments();
+    console.log("allComents", allComents);
   }, []);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
+  const getAllComments = async () => {
+    const q = query(
+      collection(db, "posts", id, "comments"),
+      where("id", "==", id)
+    );
+    await onSnapshot(q, (querySnapshot) => {
+      const allComents = [];
+      querySnapshot.forEach((doc) => {
+        allComents.push({ ...doc.data(), id: doc.id });
+      });
+      setAllComents(allComents);
+      return allComents;
+    });
+  };
+
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (appIsReady) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [appIsReady]);
+
+  // if (!appIsReady) {
+  //   return null;
+  // }
 
   const { login, avatar } = useSelector((state) => state.auth);
-  console.log("avatar", avatar);
+
   const createPost = async () => {
     Keyboard.dismiss();
     setComment("");
@@ -74,37 +116,13 @@ export default function CommentsScreen({ route }) {
     });
   };
 
-  const getAllComments = async () => {
-    const q = query(
-      collection(db, "posts", id, "comments"),
-      where("id", "==", id)
-    );
-    await onSnapshot(q, (querySnapshot) => {
-      const allComents = [];
-      querySnapshot.forEach((doc) => {
-        allComents.push({ ...doc.data(), id: doc.id });
-      });
-      setAllComents(allComents);
-      return allComents;
-    });
-  };
-  const [isReady, setIsReady] = useState(false);
-  if (!isReady) {
-    return (
-      <Apploading
-        startAsync={loadApplication}
-        onFinish={() => setIsReady(true)}
-        onError={console.warn}
-      />
-    );
-  }
-  console.log("allComents", allComents);
   return (
+    // <View onLayout={onLayoutRootView} style={styles.container}>
     <View style={styles.container}>
       {photo && (
         <TouchableWithoutFeedback onPress={keyboardHide}>
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === "ios" ? "padding" : ""}
           >
             <View style={styles.image}>
               <Image source={{ uri: photo }} style={styles.image} />
@@ -218,12 +236,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   commentText: {
-    fontFamily: "OpenSans-Light",
+    // fontFamily: "OpenSans-Light",
     fontSize: 13,
     color: "#000",
   },
   commentTime: {
-    fontFamily: "OpenSans-Light",
+    // fontFamily: "OpenSans-Light",
     fontSize: 10,
     color: "#BDBDBD",
   },

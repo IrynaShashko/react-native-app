@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { Camera, CameraType } from "expo-camera";
+import { useCallback, useEffect, useState } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
+import * as ImagePicker from "expo-image-picker";
 import {
   StyleSheet,
   View,
@@ -19,20 +18,9 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../redux/auth/authOperations";
-import Apploading from "expo-app-loading";
+import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
-import {
-  AntDesign,
-  MaterialIcons,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-
-const loadApplication = async () => {
-  await Font.loadAsync({
-    "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
-    "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
-  });
-};
+import { AntDesign } from "@expo/vector-icons";
 
 const images = require("../assets/Images/background.png");
 
@@ -43,32 +31,33 @@ const initialSate = {
   avatar: "",
 };
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RegistrationScreen({ navigation }) {
-  const [camera, setCamera] = useState(null);
+  const [appIsReady, setAppIsReady] = useState(false);
   const [photo, setPhoto] = useState(null);
-  const [addAvatar, setAddAvatar] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
-  const [type, setType] = useState(CameraType.front);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    console.log("result", result.assets);
+    const { uri } = result.assets[0];
+    setPhoto(uri);
+    console.log("uri", uri);
+    if (!result.canceled) {
+      console.log(result);
+    } else {
+      alert("You did not select any image.");
+    }
+  };
 
   const dispatch = useDispatch();
-
-  function toggleCameraType() {
-    setType((current) => {
-      current === CameraType.front ? CameraType.back : CameraType.front;
-    });
-  }
-
-  const onAddAvatarButtonClick = () => {
-    setAddAvatar(true);
-  };
-
-  const takePhoto = async () => {
-    const photo = await camera.takePictureAsync();
-    await setPhoto(photo.uri);
-  };
 
   const uploadPhotoToServer = async () => {
     const storage = getStorage();
@@ -100,6 +89,33 @@ export default function RegistrationScreen({ navigation }) {
     //   Dimensions.removeEventListener("change", onChange);
     // };
   }, []);
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await Font.loadAsync({
+          "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
+          "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
+        });
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
 
   const submitForm = async () => {
     const userAvatar = await uploadPhotoToServer();
@@ -123,24 +139,14 @@ export default function RegistrationScreen({ navigation }) {
     Keyboard.dismiss();
     setState(initialSate);
   };
-  const [isReady, setIsReady] = useState(false);
-  if (!isReady) {
-    return (
-      <Apploading
-        startAsync={loadApplication}
-        onFinish={() => setIsReady(true)}
-        onError={console.warn}
-      />
-    );
-  }
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <ImageBackground style={styles.image} source={images}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : ""}>
           <TouchableWithoutFeedback onPress={keyboardHide}>
             <View
+              onLayout={onLayoutRootView}
               style={{
                 ...styles.container,
                 top: isShowKeyboard ? -300 : -185,
@@ -150,45 +156,45 @@ export default function RegistrationScreen({ navigation }) {
             >
               <View style={styles.avatarContainer}>
                 <View style={styles.avatar}>
-                  {addAvatar && (
-                    <Camera style={styles.camera} type={type} ref={setCamera}>
-                      {photo && (
-                        <View style={styles.takePhotoContainer}>
-                          <Image
-                            style={{ height: 120, width: 120, borderRadius: 8 }}
-                            source={{ uri: photo }}
-                          />
-                        </View>
-                      )}
-                      <View style={styles.toggleContainer}>
-                        <TouchableOpacity
-                          style={styles.toggle}
-                          onPress={toggleCameraType}
-                        >
-                          <MaterialCommunityIcons
-                            name="camera-flip"
-                            size={30}
-                            color="#e8e8e8"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.cameraContainer}>
-                        <TouchableOpacity
-                          onPress={takePhoto}
-                          style={styles.photoButton}
-                        >
-                          <MaterialIcons
-                            name="camera-alt"
-                            size={30}
-                            color="#e8e8e8"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    </Camera>
+                  {/* {addAvatar && (
+                    <Camera style={styles.camera} type={type} ref={setCamera}> */}
+                  {photo && (
+                    <View style={styles.takePhotoContainer}>
+                      <Image
+                        style={{ height: 120, width: 120, borderRadius: 8 }}
+                        source={{ uri: photo }}
+                      />
+                    </View>
                   )}
+                  {/* <View style={styles.toggleContainer}>
+                    <TouchableOpacity
+                      style={styles.toggle}
+                      onPress={toggleCameraType}
+                    >
+                      <MaterialCommunityIcons
+                        name="camera-flip"
+                        size={30}
+                        color="#e8e8e8"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.cameraContainer}>
+                    <TouchableOpacity
+                      onPress={takePhoto}
+                      style={styles.photoButton}
+                    >
+                      <MaterialIcons
+                        name="camera-alt"
+                        size={30}
+                        color="#e8e8e8"
+                      />
+                    </TouchableOpacity>
+                  </View> */}
+                  {/* </Camera>
+                  )} */}
                 </View>
                 <TouchableOpacity
-                  onPress={onAddAvatarButtonClick}
+                  onPress={pickImageAsync}
                   style={styles.buttonContainer}
                 >
                   {/* <View style={styles.buttonContainer}> */}
@@ -239,7 +245,7 @@ export default function RegistrationScreen({ navigation }) {
               >
                 <Button
                   onPress={submitForm}
-                  style={styles.button}
+                  // style={styles.button}
                   color={"#fff"}
                   title="Зареєструватись"
                 />

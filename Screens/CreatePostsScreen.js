@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../firebase/config";
 import {
+  Text,
   Button,
   StyleSheet,
   TextInput,
@@ -43,6 +44,20 @@ export default function CreatePostsScreen({ navigation }) {
       setLongitude(location.coords.longitude);
     })();
   }, [photo]);
+
+  if (!permission) {
+    return <View />;
+  }
+  if (!permission.granted) {
+    return (
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ textAlign: "center" }}>
+          We need your permission to show the camera
+        </Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -111,9 +126,7 @@ export default function CreatePostsScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={keyboardHide}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : ""}>
           <Camera
             style={{ ...styles.camera, marginTop: isShowKeyboard ? 20 : 50 }}
             type={type}
