@@ -46,10 +46,9 @@ export default function RegistrationScreen({ navigation }) {
       quality: 1,
     });
 
-    console.log("result", result.assets);
     const { uri } = result.assets[0];
     setPhoto(uri);
-    console.log("uri", uri);
+
     if (!result.canceled) {
       console.log(result);
     } else {
