@@ -1,17 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import Main from "./component/main";
-
-const loadApplication = async () => {
-  await Font.loadAsync({
-    "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
-    "OpenSans-Light": require("./assets/fonts/OpenSans-Light.ttf"),
-  });
-};
 
 SplashScreen.preventAutoHideAsync();
 
