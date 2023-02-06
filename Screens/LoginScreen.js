@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -15,10 +15,6 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { authSignInUser } from "../redux/auth/authOperations";
-import * as SplashScreen from "expo-splash-screen";
-import * as Font from "expo-font";
-
-SplashScreen.preventAutoHideAsync();
 
 const images = require("../assets/Images/background.png");
 
@@ -28,7 +24,6 @@ const initialSate = {
 };
 
 export default function LoginScreen({ navigation }) {
-  const [appIsReady, setAppIsReady] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
   const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
@@ -45,41 +40,6 @@ export default function LoginScreen({ navigation }) {
     // };
   }, []);
 
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await Font.loadAsync({
-          "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
-          "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
-        });
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
-  if (!appIsReady) {
-    return null;
-    // return (
-    //   <View
-    //     style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-    //     onLayout={onLayoutRootView}
-    //   >
-    //     <Text>Завантаження...</Text>
-    //   </View>
-    // );
-  }
   const submitForm = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
@@ -100,7 +60,6 @@ export default function LoginScreen({ navigation }) {
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : ""}>
           <TouchableWithoutFeedback onPress={keyboardHide}>
             <View
-              onLayout={onLayoutRootView}
               style={{
                 ...styles.container,
                 top: isShowKeyboard ? -240 : -120,

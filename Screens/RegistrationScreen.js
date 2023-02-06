@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import {
@@ -18,8 +18,6 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../redux/auth/authOperations";
-import * as SplashScreen from "expo-splash-screen";
-import * as Font from "expo-font";
 import { AntDesign } from "@expo/vector-icons";
 
 const images = require("../assets/Images/background.png");
@@ -31,10 +29,7 @@ const initialSate = {
   avatar: "",
 };
 
-SplashScreen.preventAutoHideAsync();
-
 export default function RegistrationScreen({ navigation }) {
-  const [appIsReady, setAppIsReady] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialSate);
@@ -88,33 +83,6 @@ export default function RegistrationScreen({ navigation }) {
     //   Dimensions.removeEventListener("change", onChange);
     // };
   }, []);
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await Font.loadAsync({
-          "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
-          "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
-        });
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
-  if (!appIsReady) {
-    return null;
-  }
 
   const submitForm = async () => {
     const userAvatar = await uploadPhotoToServer();
@@ -145,7 +113,6 @@ export default function RegistrationScreen({ navigation }) {
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : ""}>
           <TouchableWithoutFeedback onPress={keyboardHide}>
             <View
-              onLayout={onLayoutRootView}
               style={{
                 ...styles.container,
                 top: isShowKeyboard ? -300 : -185,

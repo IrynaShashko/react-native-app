@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,9 +16,29 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { AntDesign, EvilIcons, SimpleLineIcons } from "@expo/vector-icons";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function DefaultScreenPosts({ navigation, route }) {
+  const [appIsReady, setAppIsReady] = useState(false);
   const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await getAllPosts();
+
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
 
   const getAllPosts = async () => {
     const q = query(collection(db, "posts"));
@@ -40,12 +60,24 @@ export default function DefaultScreenPosts({ navigation, route }) {
     });
   };
 
-  useEffect(() => {
-    getAllPosts();
-  }, []);
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontFamily: "OpenSans-Light", fontSize: 25 }}>
+          Зачекайте...
+        </Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
+    <View onLayout={onLayoutRootView} style={styles.container}>
       <FlatList
         data={posts}
         keyExtractor={(item, index) => index.toString()}

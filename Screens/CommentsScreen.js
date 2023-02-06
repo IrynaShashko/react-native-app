@@ -26,42 +26,32 @@ import {
 } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
 import * as SplashScreen from "expo-splash-screen";
-import * as Font from "expo-font";
 
-// SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync();
 
 export default function CommentsScreen({ route }) {
-  // const [appIsReady, setAppIsReady] = useState(false);
+  const [appIsReady, setAppIsReady] = useState(false);
   const [allComents, setAllComents] = useState([]);
   const [comment, setComment] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [commentsLength, setCommentsLength] = useState(0);
   const { id, photo } = route.params;
-
-  // useEffect(() => {
-  //   async function prepare() {
-  //     try {
-  //       await Font.loadAsync({
-  //         "OpenSans-Bold": require("../assets/fonts/OpenSans-Bold.ttf"),
-  //         "OpenSans-Light": require("../assets/fonts/OpenSans-Light.ttf"),
-  //       });
-  //       await getAllComments();
-  //       console.log("allComents", allComents);
-
-  //       await new Promise((resolve) => setTimeout(resolve, 2000));
-  //     } catch (e) {
-  //       console.warn(e);
-  //     } finally {
-  //       setAppIsReady(true);
-  //     }
-  //   }
-
-  //   prepare();
-  // }, []);
+  const { userId, login, avatar } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    getAllComments();
-    console.log("allComents", allComents);
+    async function prepare() {
+      try {
+        await getAllComments();
+
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
   }, []);
 
   const keyboardHide = () => {
@@ -83,32 +73,20 @@ export default function CommentsScreen({ route }) {
     });
   };
 
-  // const onLayoutRootView = useCallback(async () => {
-  //   if (appIsReady) {
-  //     await SplashScreen.hideAsync();
-  //   }
-  // }, [appIsReady]);
-
-  // if (!appIsReady) {
-  //   return null;
-  // }
-
-  const { login, avatar } = useSelector((state) => state.auth);
-
   const createPost = async () => {
     Keyboard.dismiss();
     setComment("");
     setIsShowKeyboard(false);
     setCommentsLength(allComents.length + 1);
     const uniquePostId = await Date.now();
-    const time = await new Date(uniquePostId).toLocaleString();
     const createComment = await collection(db, "posts", id, "comments");
     await addDoc(createComment, {
       id,
       comment,
       login,
-      time,
+      time: uniquePostId,
       avatar,
+      userId,
     });
     const updatePosts = doc(db, "posts", id);
     await updateDoc(updatePosts, {
@@ -116,9 +94,24 @@ export default function CommentsScreen({ route }) {
     });
   };
 
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontFamily: "OpenSans-Light", fontSize: 25 }}>
+          Зачекайте...
+        </Text>
+      </View>
+    );
+  }
+
   return (
-    // <View onLayout={onLayoutRootView} style={styles.container}>
-    <View style={styles.container}>
+    <View onLayout={onLayoutRootView} style={styles.container}>
       {photo && (
         <TouchableWithoutFeedback onPress={keyboardHide}>
           <KeyboardAvoidingView
@@ -132,20 +125,43 @@ export default function CommentsScreen({ route }) {
                   keyExtractor={(item, index) => item.id}
                   renderItem={({ item }) => (
                     <View>
-                      <View style={{ flexDirection: "row" }}>
+                      <View
+                        style={{
+                          flexDirection:
+                            item.userId === userId ? "row-reverse" : "row",
+                        }}
+                      >
                         <Image
                           source={{ uri: item.avatar }}
                           style={styles.avatar}
                         />
-                        <View style={styles.commentContainer}>
-                          <Text style={styles.commentText}>{item.comment}</Text>
+                        <View
+                          style={{
+                            ...styles.commentContainer,
+                            marginLeft: item.userId === userId ? 0 : 6,
+                            marginRight: item.userId === userId ? 6 : 0,
+                            borderTopLeftRadius: item.userId === userId ? 6 : 0,
+                            borderTopRightRadius:
+                              item.userId === userId ? 0 : 6,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              ...styles.commentText,
+                              color: "#000",
+                            }}
+                          >
+                            {item.comment}
+                          </Text>
                           <View style={{ flexDirection: "row" }}>
                             <Text
                               style={{ ...styles.commentTime, marginRight: 10 }}
                             >
                               {item.login}
                             </Text>
-                            <Text style={styles.commentTime}>{item.time}</Text>
+                            <Text style={styles.commentTime}>
+                              {new Date(item.time).toLocaleString()}
+                            </Text>
                           </View>
                         </View>
                       </View>
@@ -194,10 +210,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderTopLeftRadius: 0,
     backgroundColor: "#F6F6F6",
+    justifyContent: "flex-end",
+    alignSelf: "flex-end",
     paddingHorizontal: 16,
     paddingVertical: 16,
     marginBottom: 24,
-    marginLeft: 10,
   },
   avatar: {
     width: 28,
@@ -236,12 +253,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   commentText: {
-    // fontFamily: "OpenSans-Light",
+    fontFamily: "OpenSans-Light",
     fontSize: 13,
-    color: "#000",
+    // color: "#000",
   },
   commentTime: {
-    // fontFamily: "OpenSans-Light",
+    fontFamily: "OpenSans-Light",
     fontSize: 10,
     color: "#BDBDBD",
   },
