@@ -6,7 +6,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
-} from "react-native";
+} from "@react-native-async-storage/async-storage";
 import { db } from "../firebase/config";
 import {
   collection,
@@ -23,6 +23,8 @@ SplashScreen.preventAutoHideAsync();
 export default function DefaultScreenPosts({ navigation, route }) {
   const [appIsReady, setAppIsReady] = useState(false);
   const [posts, setPosts] = useState([]);
+
+  console.log(posts);
 
   useEffect(() => {
     async function prepare() {

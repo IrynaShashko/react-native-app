@@ -13,7 +13,7 @@ import {
   Platform,
   View,
   Image,
-} from "react-native";
+} from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
 import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";

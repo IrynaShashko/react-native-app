@@ -15,7 +15,7 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   Image,
-} from "react-native";
+} from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../redux/auth/authOperations";
 import { AntDesign } from "@expo/vector-icons";

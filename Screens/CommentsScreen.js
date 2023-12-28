@@ -14,7 +14,7 @@ import {
   TextInput,
   Image,
   StyleSheet,
-} from "react-native";
+} from "@react-native-async-storage/async-storage";
 import {
   collection,
   addDoc,

@@ -12,7 +12,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
-} from "react-native";
+} from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { authSignInUser } from "../redux/auth/authOperations";
 
